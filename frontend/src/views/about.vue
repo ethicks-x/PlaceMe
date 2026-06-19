@@ -1,3 +1,3 @@
 <template>
-    <h1>About: NoCode</h1>
+  <h1>About: NoCode</h1>
 </template>

@@ -1,12 +1,12 @@
 <script setup>
-    import { RouterLink, RouterView } from 'vue-router';
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
   <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
   <nav>
     <RouterLink to="/">Go to Home</RouterLink>
-    <br/>
+    <br />
     <RouterLink to="/about">Go to About</RouterLink>
   </nav>
   <main>

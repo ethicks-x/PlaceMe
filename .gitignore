@@ -17,7 +17,7 @@ wheels/
 
 # Virtual environments
 .venv
-.env
+*/.env
 
 # Database files
 *.db 
@@ -25,3 +25,4 @@ wheels/
 
 # extras
 .pre-commit-config.yaml
+.ruff_cache

@@ -1,21 +1,30 @@
-import { createApp } from 'vue'
-import { router } from './router'
-import { createBootstrap } from 'bootstrap-vue-next'
+import { createApp } from "vue";
+import { router } from "./router";
+import axios from "axios";
+import { createBootstrap } from "bootstrap-vue-next";
+import { useAuth } from "./store/auth";
 
 // Add the necessary CSS
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 
-import App from './App.vue'
+import App from "./App.vue";
+
+axios.defaults.baseURL = "http://localhost:6969";
+axios.defaults.withCredentials = true;
+
+const { initAuth } = useAuth();
 
 async function StartApp() {
-    const app = createApp(App)
+  await initAuth();
 
-    app.use(createBootstrap());
-    app.use(router);
+  const app = createApp(App);
 
-    await router.isReady();
-    app.mount('#app');
+  app.use(createBootstrap());
+  app.use(router);
+
+  await router.isReady();
+  app.mount("#app");
 }
 
 StartApp();

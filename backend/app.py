@@ -9,6 +9,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from database.db import create_migration, db
+from routes import auth
+from routes.auth import create_admin_user
 
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -45,12 +47,14 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 create_migration(app)
 
+app.register_blueprint(auth.bp, url_prefix="/api/auth")
+
 if __name__ == "__main__":
     try:
         with app.app_context():
             db.create_all()
 
-            # create_admin_user()
+            create_admin_user()
 
         server_host = os.getenv("SERVER_HOST")
         server_port = os.getenv("SERVER_PORT")

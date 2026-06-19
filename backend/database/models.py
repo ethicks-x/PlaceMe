@@ -73,7 +73,7 @@ class Applications(db.Model):
     appl_id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     drive_id = db.Column(db.Integer, db.ForeignKey("placement_drives.drive_id"), nullable=False)
-    appl_date = db.Column(db.DateTime, nullable=False)
+    appl_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     appl_status = db.Column(
         db.Enum(
             "not applied", "applied", "shortlisted", "selected", "rejected", name="appl_status"
