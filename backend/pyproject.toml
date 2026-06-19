@@ -9,6 +9,7 @@ dependencies = [
     "flask-bcrypt>=1.0.1",
     "flask-cors>=6.0.5",
     "flask-jwt-extended>=4.7.4",
+    "flask-migrate>=4.1.0",
 ]
 
 [dependency-groups]

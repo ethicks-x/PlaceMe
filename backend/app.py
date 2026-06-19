@@ -1,14 +1,14 @@
-# from db.models import User
 import os
 from datetime import timedelta
 from pathlib import Path
 
-from db.db import create_migration, db
 from dotenv import load_dotenv
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+
+from database.db import create_migration, db
 
 env_path = Path(".") / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -39,19 +39,19 @@ bcrypt = Bcrypt(app)
 app.config["BCRYPT"] = bcrypt
 
 db_path = Path.cwd() / "database/"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + str(db_path / "database.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + str(db_path / "app.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 create_migration(app)
 
-with app.app_context():
-    db.create_all()
-
-    # create_admin_user()
-
 if __name__ == "__main__":
     try:
+        with app.app_context():
+            db.create_all()
+
+            # create_admin_user()
+
         server_host = os.getenv("SERVER_HOST")
         server_port = os.getenv("SERVER_PORT")
         server_debug = os.getenv("SERVER_DEBUG")

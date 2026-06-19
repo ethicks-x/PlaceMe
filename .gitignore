@@ -17,3 +17,11 @@ wheels/
 
 # Virtual environments
 .venv
+.env
+
+# Database files
+*.db 
+*.sqlite
+
+# extras
+.pre-commit-config.yaml
