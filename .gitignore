@@ -28,3 +28,4 @@ wheels/
 .ruff_cache
 .oxfmtrc.json
 .oxlintrc.json
+.husky/

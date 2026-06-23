@@ -57,7 +57,6 @@ function _setAuth(userData, token) {
   }
 }
 
-
 // Handles the login process.
 async function login(credentials) {
   const { data } = await axios.post("/api/auth/login", credentials);
@@ -77,7 +76,6 @@ async function login(credentials) {
   // Redirect to the appropriate dashboard
   router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
 }
-
 
 // Clears all authentication data from state and storage.
 async function logout() {
