@@ -5,10 +5,10 @@ import AboutView from "../views/about.vue";
 import LoginView from "../views/login.vue";
 
 const routes = [
-    { path: "/", component: HomeView },
-    { path: "/about", component: AboutView },
-    { path: "/login", component: LoginView },
-    { path: "/signup", component: LoginView },
+  { path: "/", component: HomeView },
+  { path: "/about", component: AboutView },
+  { path: "/login", component: LoginView },
+  { path: "/signup", component: LoginView },
 ];
 
 export const router = createRouter({

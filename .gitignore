@@ -23,6 +23,8 @@ wheels/
 *.db 
 *.sqlite
 
-# extras
+# config files
 .pre-commit-config.yaml
 .ruff_cache
+.oxfmtrc.json
+.oxlintrc.json

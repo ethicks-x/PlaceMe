@@ -1,7 +1,7 @@
 import { reactive, readonly } from "vue";
 import axios from "axios";
 
-// The reactive state object
+// reactive state object
 const state = reactive({
   user: null,
   token: null,
@@ -16,12 +16,12 @@ async function initAuth() {
   let potentialUser = null;
   let potentialToken = null;
 
-  // Case 1: "Remember Me" was used. User is in localStorage, token is in a cookie.
+  // rememberMe -> Yes. User is in localStorage, token is in a cookie.
   if (userFromLocalStorage) {
     potentialUser = JSON.parse(userFromLocalStorage);
     // Token is sent automatically by the browser via cookie.
   }
-  // Case 2: Regular login. User and token are in sessionStorage.
+  // rememberMe -> No. User and token are in sessionStorage.
   else if (userFromSessionStorage && tokenFromSessionStorage) {
     potentialUser = JSON.parse(userFromSessionStorage);
     potentialToken = tokenFromSessionStorage;
@@ -32,15 +32,14 @@ async function initAuth() {
     try {
       // This relies on the cookie or the token being set in axios headers below
       if (potentialToken) {
-        axios.defaults.headers.common["Authorization"] =
-          `Bearer ${potentialToken}`;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${potentialToken}`;
       }
       // A simple protected endpoint to verify the token is still valid.
       const response = await axios.get("/api/profile");
       // If the above call succeeds, the session is valid.
       _setAuth(response.data, potentialToken);
     } catch (error) {
-      // If it fails (e.g., 401 Unauthorized), the token is invalid. Log out.
+      // If it fails, the token is invalid. Log out.
       console.error("Session revalidation failed:", error);
       logout();
     }
@@ -58,9 +57,8 @@ function _setAuth(userData, token) {
   }
 }
 
-/**
- * Handles the login process.
- */
+
+// Handles the login process.
 async function login(credentials) {
   const { data } = await axios.post("/api/auth/login", credentials);
 
@@ -80,9 +78,8 @@ async function login(credentials) {
   router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
 }
 
-/**
- * Clears all authentication data from state and storage.
- */
+
+// Clears all authentication data from state and storage.
 async function logout() {
   // Clear state
   state.user = null;
@@ -97,7 +94,7 @@ async function logout() {
   // Clear axios header
   delete axios.defaults.headers.common["Authorization"];
 
-  // Tell backend to clear the auth cookie, just in case
+  // Tell backend to clear the auth cookie
   try {
     await axios.post("/api/auth/logout");
   } catch (error) {
@@ -110,7 +107,6 @@ async function logout() {
   }
 }
 
-// COMPOSABLE (the hook to use in components)
 export function useAuth() {
   return {
     // Use readonly to prevent direct state mutation from components
