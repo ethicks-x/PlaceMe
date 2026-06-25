@@ -5,21 +5,30 @@ import { router } from "../router";
 import { useAuth } from "../store/auth";
 import axios from "axios";
 
-// useRoute provides access to the current route object
 const route = useRoute();
 const { login } = useAuth();
+
+// trying out some UX
+const isPasswordFocused = ref(false);
+const passwordCriteria = computed(() => {
+    const p = signupForm.value.password || "";
+    return {
+        length: p.length >= 8,
+        uppercase: /[A-Z]/.test(p),
+        number: /[0-9]/.test(p),
+        special: /[^A-Za-z0-9]/.test(p)
+    };
+});
 
 // This computed property determines which tab should be active
 // based on the URL path. It makes the component reactive to URL changes.
 const activeTab = computed(() => {
-  // Assuming your routes are named 'login' and 'register'
   if (route.path.includes("/signup")) {
     return "signup";
   }
   return "login";
 });
 
-// FORM HANDLING
 const loginForm = ref({
   email: "",
   password: "",
@@ -44,7 +53,6 @@ const errors = ref({
 const handleLogin = async () => {
   console.log("Logging in with:", loginForm.value);
 
-  // Reset any previous errors
   errors.value.login = "";
   isLoading.value = true;
 
@@ -54,7 +62,6 @@ const handleLogin = async () => {
       password: loginForm.value.password,
       rememberMe: loginForm.value.rememberMe,
     });
-    // Redirect happens inside the login action
   } catch (err) {
     errors.value.login = err.message || "An error occurred.";
   } finally {
@@ -76,9 +83,8 @@ const handleSignup = async () => {
   if (res.status === 201) {
     const data = res.data;
 
-    // Redirect to the login page or show a success message
     router.push("/login");
-    errors.value.signup = ""; // Clear any previous signup errors
+    errors.value.signup = "";
     console.log("Signup successful:", data);
   } else {
     const error = res.data;
@@ -133,7 +139,7 @@ const handleSignup = async () => {
           key="login-form"
         >
           <h2 class="text-white">Welcome Back!</h2>
-          <form @submit.prevent="handleLogin">
+          <form @submit.prevent="handleLogin" autocomplete="off">
             <div class="mb-3">
               <input
                 type="email"
@@ -180,7 +186,7 @@ const handleSignup = async () => {
           key="signup-form"
         >
           <h2 class="text-white">Create Account</h2>
-          <form @submit.prevent="handleSignup">
+          <form @submit.prevent="handleSignup" autocomplete="off">
             <div class="mb-3">
               <input
                 type="text"
@@ -203,7 +209,7 @@ const handleSignup = async () => {
             </div>
             <div class="mb-3">
               <input
-                type="number"
+                type="text"
                 class="form-control"
                 id="signupMobile"
                 placeholder="Mobile"
@@ -218,9 +224,35 @@ const handleSignup = async () => {
                 id="signupPassword"
                 placeholder="Create Password"
                 v-model="signupForm.password"
+                autocomplete="off"
+                @focus="isPasswordFocused = true"
+                @blur="isPasswordFocused = false"
                 required
               />
             </div>
+            <div v-if="isPasswordFocused || signupForm.password.length > 0" 
+                 class="password-info-box mt-2 p-3"
+            >
+                <p class="mb-2 text-white fw-bold" style="font-size: 0.9rem;">Password must contain:</p>
+                <ul class="list-unstyled mb-0 criteria-list">
+                  <li :class="passwordCriteria.length ? 'text-success fw-bold' : 'text-muted'">
+                    <i class="bi me-1" :class="passwordCriteria.length ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                    At least 8 characters
+                  </li>
+                  <li :class="passwordCriteria.uppercase ? 'text-success fw-bold' : 'text-muted'">
+                    <i class="bi me-1" :class="passwordCriteria.uppercase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                    One uppercase letter
+                  </li>
+                  <li :class="passwordCriteria.number ? 'text-success fw-bold' : 'text-muted'">
+                    <i class="bi me-1" :class="passwordCriteria.number ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                    One number
+                  </li>
+                  <li :class="passwordCriteria.special ? 'text-success fw-bold' : 'text-muted'">
+                    <i class="bi me-1" :class="passwordCriteria.special ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                    One special character
+                  </li>
+                </ul>
+              </div>
             <div class="mb-3">
               <input
                 type="password"
@@ -238,3 +270,189 @@ const handleSignup = async () => {
     </div>
   </main>
 </template>
+
+<style scoped>
+    /* Form Container */
+    .form-container {
+      background: rgba(30, 41, 59, 0.65); /* Matches Surface Level slate */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Deep shadow to pop off the background */
+    }
+
+    /* Sleek Tab Navigation */
+    .nav-tabs {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+      border-radius: 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .nav-tabs .nav-item {
+      width: 50%;
+      text-align: center;
+    }
+    .nav-tabs .nav-link {
+      color: #94A3B8;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-tabs .nav-link:hover {
+      color: #F8FAFC;
+      border-color: transparent;
+    }
+    .nav-tabs .nav-link.active {
+      color: #38BDF8;
+      background: transparent;
+      border-bottom: 2px solid #38BDF8;
+    }
+
+    /* Dark Mode Form Inputs */
+    .form-control {
+      background-color: rgba(15, 23, 42, 0.6) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: #F8FAFC !important;
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .form-control::placeholder {
+      color: #64748B;
+    }
+    .form-control:focus {
+      background-color: rgba(15, 23, 42, 0.95) !important;
+      border-color: #38BDF8 !important;
+      box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25) !important; /* Blue glow on focus */
+    }
+
+    /* High-Conversion Primary Button */
+    .btn-custom {
+      background-color: #38BDF8;
+      color: #020617; /* Very dark blue/black text for contrast */
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.85rem;
+      width: 100%;
+      border-radius: 0.5rem;
+      border: none;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    .btn-custom:hover:not(:disabled) {
+      background-color: #34D399; /* Smoothly transitions to Success Mint Green! */
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(52, 211, 153, 0.3);
+    }
+    .btn-custom:disabled {
+      background-color: #64748B;
+      color: #94A3B8;
+      cursor: not-allowed;
+    }
+
+    /* Checkbox & Links */
+    .form-check-label {
+      color: #94A3B8;
+      cursor: pointer;
+    }
+    .form-check-input {
+      background-color: rgba(15, 23, 42, 0.6);
+      border-color: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+    }
+    .form-check-input:checked {
+      background-color: #38BDF8;
+      border-color: #38BDF8;
+    }
+    .form-text a {
+      color: #38BDF8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .form-text a:hover {
+      color: #34D399;
+    }
+
+    /* Criteria List */
+    .password-info-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      
+      animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: top; 
+    }
+
+    @keyframes slideDownFade {
+      0% { 
+        opacity: 0; 
+        transform: translateY(-10px) scaleY(0.95); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0) scaleY(1); 
+      }
+    }
+
+    /* The Success Nudge (For the text lines) */
+    .criteria-list li {
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateX(0);
+    }
+
+    .criteria-list .text-success {
+      color: #34D399 !important;
+      transform: translateX(6px); /* Nudges the text to the right when completed */
+    }
+
+    .criteria-list .text-muted {
+      color: #64748B !important;
+    }
+
+    /* The Checkmark Pop (For the icons) */
+    .criteria-list li i {
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      display: inline-block; 
+    }
+
+    .criteria-list .text-success i {
+      animation: checkPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes checkPop {
+      0% { 
+        transform: scale(1); 
+      }
+      40% { 
+        transform: scale(1.5) rotate(-10deg); 
+        color: #F8FAFC; /* Flashes bright white at the peak of the pop */
+      }
+      100% { 
+        transform: scale(1) rotate(0deg); 
+      }
+    }
+
+    /* Typography */
+    h2 {
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+</style>

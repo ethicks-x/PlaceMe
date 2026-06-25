@@ -8,6 +8,8 @@ import { useAuth } from "./store/auth";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 import App from "./App.vue";
 
 axios.defaults.baseURL = "http://localhost:6969";
