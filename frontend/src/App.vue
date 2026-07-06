@@ -1,9 +1,12 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
+import { useAuth } from "./store/auth";
+
+const { authState } = useAuth();
 </script>
 
 <template>
-  <NavBar role="guest"/>
+  <NavBar :role="authState.user?.role || 'guest'"/>
   <main>
     <RouterView />
   </main>

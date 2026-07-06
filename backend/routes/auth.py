@@ -51,7 +51,19 @@ def register_user():
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({"message": "User registered successfully!"}), 201
+        additional_claims = {"role": new_user.role}
+        access_token = create_access_token(
+            identity=str(new_user.user_id), additional_claims=additional_claims
+        )
+        user_data = {
+            "id": new_user.user_id,
+            "email": new_user.email,
+            "mobile": new_user.mobile,
+            "fullName": new_user.full_name,
+            "role": new_user.role,
+        }
+
+        return jsonify(access_token=access_token, user=user_data), 201
 
     except Exception as e:
         db.session.rollback()
@@ -79,10 +91,12 @@ def login_user():
     # Create JWT Token
     # We store the user's role in the JWT's claims for easy access on protected routes
     additional_claims = {"role": user.role}
-    access_token = create_access_token(identity=str(user.id), additional_claims=additional_claims)
+    access_token = create_access_token(
+        identity=str(user.user_id), additional_claims=additional_claims
+    )
 
     user_data = {
-        "id": user.id,
+        "id": user.user_id,
         "email": user.email,
         "mobile": user.mobile,
         "fullName": user.full_name,

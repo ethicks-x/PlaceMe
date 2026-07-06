@@ -71,25 +71,21 @@ const handleLogin = async () => {
 
 const handleSignup = async () => {
   console.log("Signing up with:", signupForm.value);
+  errors.value.signup = ""
+  isLoading.value = true;
 
-  const res = await axios.post("/api/auth/register", {
-    full_name: signupForm.value.name,
-    email: signupForm.value.email,
-    mobile: signupForm.value.mobile,
-    password: signupForm.value.password,
-    confirmPassword: signupForm.value.confirmPassword,
-  });
-
-  if (res.status === 201) {
-    const data = res.data;
-
-    router.push("/login");
-    errors.value.signup = "";
-    console.log("Signup successful:", data);
-  } else {
-    const error = res.data;
-    errors.value.signup = error.message || "Signup failed. Please try again.";
-    console.error("Signup failed:", error);
+  try {
+    await signup({
+        full_name: signupForm.value.name,
+        email: signupForm.value.email,
+        mobile: signupForm.value.mobile,
+        password: signupForm.value.password,
+        confirmPassword: signupForm.value.confirmPassword,
+    });
+  } catch (err) {
+    errors.value.signup = err.response?.data?.message || "Signup Failed. Please try again.";
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -263,7 +259,7 @@ const handleSignup = async () => {
                 required
               />
             </div>
-            <button type="submit" class="btn btn-custom">Sign Up</button>
+            <button type="submit" class="btn btn-custom" :disabled="isLoading">Sign Up</button>
           </form>
         </div>
       </div>

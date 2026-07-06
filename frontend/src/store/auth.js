@@ -1,5 +1,6 @@
 import { reactive, readonly } from "vue";
 import axios from "axios";
+import { router } from "../router";
 
 // reactive state object
 const state = reactive({
@@ -77,6 +78,20 @@ async function login(credentials) {
   router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
 }
 
+// Handles the signup process.
+async function signup(signupData) {
+  const { data } = await axios.post("/api/auth/register", signupData);
+
+  _setAuth(data.user, data.access_token);
+  console.log("Signup response:", data);
+
+  sessionStorage.setItem("user", JSON.stringify(data.user));
+  sessionStorage.setItem("token", data.access_token);
+
+  // Redirect to the appropriate dashboard
+  router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
+}
+
 // Clears all authentication data from state and storage.
 async function logout() {
   // Clear state
@@ -111,6 +126,7 @@ export function useAuth() {
     authState: readonly(state),
     initAuth,
     login,
+    signup,
     logout,
   };
 }
