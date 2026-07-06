@@ -153,8 +153,10 @@ def seed_large_dataset():
         )
         comp_user.set_password("company123")
         db.session.add(comp_user)
+        db.session.flush()
 
         profile = CompanyProfile(
+            user_id=comp_user.user_id,
             company_name=f"{c_name} Inc.",
             hr_contact=mobile,
             website=f"https://{c_name.lower()}.com/careers",

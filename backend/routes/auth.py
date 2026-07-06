@@ -2,9 +2,24 @@ from flask import Blueprint, jsonify, make_response, request
 from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 
 from database.db import db
-from database.models import User
+from database.models import CompanyProfile, User
 
 bp = Blueprint("auth", __name__)
+
+
+def _issue_token_response(user):
+    additional_claims = {"role": user.role}
+    access_token = create_access_token(
+        identity=str(user.user_id), additional_claims=additional_claims
+    )
+    user_data = {
+        "id": user.user_id,
+        "email": user.email,
+        "mobile": user.mobile,
+        "fullName": user.full_name,
+        "role": user.role,
+    }
+    return access_token, user_data
 
 
 def create_admin_user():
@@ -51,17 +66,55 @@ def register_user():
         db.session.add(new_user)
         db.session.commit()
 
-        additional_claims = {"role": new_user.role}
-        access_token = create_access_token(
-            identity=str(new_user.user_id), additional_claims=additional_claims
+        access_token, user_data = _issue_token_response(new_user)
+
+        return jsonify(access_token=access_token, user=user_data), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "An error occurred during registration.", "error": str(e)}), 500
+
+
+@bp.route("/register-company", methods=["POST"])
+def register_company():
+    data = request.get_json()
+
+    required_fields = ["email", "password", "companyName", "website", "hrContact", "hrMobile"]
+    if not data or any(not data.get(field) for field in required_fields):
+        return jsonify({"message": "All fields are required"}), 400
+
+    if User.query.filter_by(email=data.get("email")).first():
+        return jsonify({"message": "This email is already registered"}), 409
+
+    if User.query.filter_by(mobile=data.get("hrMobile")).first():
+        return jsonify({"message": "This mobile number is already registered"}), 409
+
+    if CompanyProfile.query.filter_by(company_name=data.get("companyName")).first():
+        return jsonify({"message": "This company name is already registered"}), 409
+
+    try:
+        new_user = User(
+            email=data.get("email"),
+            mobile=data.get("hrMobile"),
+            full_name=data.get("hrContact"),
+            role="company",
         )
-        user_data = {
-            "id": new_user.user_id,
-            "email": new_user.email,
-            "mobile": new_user.mobile,
-            "fullName": new_user.full_name,
-            "role": new_user.role,
-        }
+        new_user.set_password(data.get("password"))
+        db.session.add(new_user)
+        db.session.flush()  # Yields user_id for the profile mapping
+
+        profile = CompanyProfile(
+            user_id=new_user.user_id,
+            company_name=data.get("companyName"),
+            hr_contact=data.get("hrMobile"),
+            website=data.get("website"),
+            approval_status="pending",
+            remarks="Awaiting admin review.",
+        )
+        db.session.add(profile)
+        db.session.commit()
+
+        access_token, user_data = _issue_token_response(new_user)
 
         return jsonify(access_token=access_token, user=user_data), 201
 
@@ -88,20 +141,7 @@ def login_user():
     if not user or not user.check_password(password):
         return jsonify({"message": "Invalid email or password"}), 401
 
-    # Create JWT Token
-    # We store the user's role in the JWT's claims for easy access on protected routes
-    additional_claims = {"role": user.role}
-    access_token = create_access_token(
-        identity=str(user.user_id), additional_claims=additional_claims
-    )
-
-    user_data = {
-        "id": user.user_id,
-        "email": user.email,
-        "mobile": user.mobile,
-        "fullName": user.full_name,
-        "role": user.role,
-    }
+    access_token, user_data = _issue_token_response(user)
 
     if remember_me:
         response = make_response(jsonify(user=user_data, msg="Login successful"))

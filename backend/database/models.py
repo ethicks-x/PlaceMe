@@ -34,6 +34,7 @@ class CompanyProfile(db.Model):
     __tablename__ = "company_profile"
 
     company_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), unique=True, nullable=False)
     company_name = db.Column(db.String(100), unique=True, nullable=False)
     hr_contact = db.Column(db.String(12), unique=True, nullable=False)
     website = db.Column(db.String(128), unique=True, nullable=False)

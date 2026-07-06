@@ -36,40 +36,64 @@ const statusClass = (status) =>
       You haven't applied to any drives yet.
     </div>
 
-    <table v-else class="table applications-table">
-      <thead>
-        <tr>
-          <th>Company</th>
-          <th>Role</th>
-          <th>Applied On</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="appl in applications" :key="appl.id">
-          <td>{{ appl.companyName }}</td>
-          <td>{{ appl.jobTitle }}</td>
-          <td>{{ new Date(appl.appliedDate).toLocaleDateString() }}</td>
-          <td><span class="badge" :class="statusClass(appl.status)">{{ appl.status }}</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="applications-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 applications-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Applied On</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="appl in applications" :key="appl.id">
+              <td>{{ appl.companyName }}</td>
+              <td>{{ appl.jobTitle }}</td>
+              <td>{{ new Date(appl.appliedDate).toLocaleDateString() }}</td>
+              <td>
+                <span class="badge" :class="statusClass(appl.status)">{{ appl.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </b-container>
 </template>
 
 <style scoped>
-.applications-table {
-  color: #f8fafc;
+.applications-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
 }
-.applications-table :deep(th) {
+.applications-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8fafc;
+    --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
+    --bs-table-hover-color: #f8fafc;
+    --bs-table-border-color: rgba(255,255,255,0.08);
+}
+.applications-table thead th {
+    background: rgba(15, 23, 42, 0.6);
   color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.applications-table :deep(td) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  vertical-align: middle;
+.applications-table tbody td {
+    padding: 1rem 1.5rem;
 }
-
+.applications-table tbody tr:last-child td {
+    border-bottom: none;
+}
 .badge {
   text-transform: capitalize;
   font-weight: 600;

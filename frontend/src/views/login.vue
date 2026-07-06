@@ -263,6 +263,11 @@ const handleSignup = async () => {
           </form>
         </div>
       </div>
+      <p>
+        <router-link to="/company/register" class="switch-link">
+            Represent a company?
+        </router-link>
+      </p>
     </div>
   </main>
 </template>
@@ -377,6 +382,16 @@ const handleSignup = async () => {
     }
     .form-text a:hover {
       color: #34D399;
+    }
+
+    .switch-link {
+        color: #38BDF8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .switch-link:hover {
+        color: #34D399;
     }
 
     /* Criteria List */

@@ -58,6 +58,12 @@ function _setAuth(userData, token) {
   }
 }
 
+function _landingPathForRole(role) {
+  if (role === "admin") return "/admin";
+  if (role === "company") return "/company/pending";
+  return "/dashboard";
+}
+
 // Handles the login process.
 async function login(credentials) {
   const { data } = await axios.post("/api/auth/login", credentials);
@@ -75,7 +81,7 @@ async function login(credentials) {
   }
 
   // Redirect to the appropriate dashboard
-  router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
+  router.push(_landingPathForRole(data.user.role));
 }
 
 // Handles the signup process.
@@ -89,7 +95,18 @@ async function signup(signupData) {
   sessionStorage.setItem("token", data.access_token);
 
   // Redirect to the appropriate dashboard
-  router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
+  router.push(_landingPathForRole(data.user.role));
+}
+
+async function registerCompany(companyData) {
+  const { data } = await axios.post("/api/auth/register-company", companyData);
+
+  _setAuth(data.user, data.access_token);
+
+  sessionStorage.setItem("user", JSON.stringify(data.user));
+  sessionStorage.setItem("token", data.access_token);
+
+  router.push(_landingPathForRole(data.user.role));
 }
 
 // Clears all authentication data from state and storage.
@@ -127,6 +144,7 @@ export function useAuth() {
     initAuth,
     login,
     signup,
+    registerCompany,
     logout,
   };
 }

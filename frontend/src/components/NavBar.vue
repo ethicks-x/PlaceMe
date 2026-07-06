@@ -14,7 +14,7 @@
 
 <template>
   <b-navbar toggleable="lg" class="custom-navbar px-4 py-2">
-    <b-navbar-brand href="#" class="navbar-brand-custom">
+    <b-navbar-brand to="/" class="navbar-brand-custom">
       <span class="brand-accent">Place</span>Me
     </b-navbar-brand>
 
@@ -22,10 +22,10 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav class="nav-links">
-        <b-nav-item href="/">Home</b-nav-item>
-        <b-nav-item href="/about">About</b-nav-item>
+        <b-nav-item to="/">Home</b-nav-item>
+        <b-nav-item to="/about">About</b-nav-item>
         <b-nav-item to="/drives" v-if="role !== 'guest'">Drives</b-nav-item>
-        <b-nav-item to="/applications" v-if="role !== 'guest'">My Applications</b-nav-item>
+        <b-nav-item to="/applications" v-if="role !== 'guest'">Applications</b-nav-item>
       </b-navbar-nav>
 
       <b-navbar-nav class="ms-auto align-items-lg-center gap-3">

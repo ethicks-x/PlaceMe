@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from database.db import create_migration, db
-from routes import auth, user
+from routes import auth, company, user
 from routes.auth import create_admin_user
 
 env_path = Path(".") / ".env"
@@ -49,6 +49,7 @@ create_migration(app)
 
 app.register_blueprint(auth.bp, url_prefix="/api/auth")
 app.register_blueprint(user.bp, url_prefix="/api")
+app.register_blueprint(company.bp, url_prefix="/api/company")
 
 if __name__ == "__main__":
     try:
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         server_port = os.getenv("SERVER_PORT")
         server_debug = os.getenv("SERVER_DEBUG")
 
-        app.run(host=server_host, port=server_port, debug=bool(server_debug))
+        app.run(host=server_host, port=server_port, debug=server_debug)
 
     except Exception as e:
         print(f"An error occurred: {e}")
