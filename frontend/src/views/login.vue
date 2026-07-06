@@ -6,7 +6,7 @@ import { useAuth } from "../store/auth";
 import axios from "axios";
 
 const route = useRoute();
-const { login } = useAuth();
+const { login, signup } = useAuth();
 
 // trying out some UX
 const isPasswordFocused = ref(false);

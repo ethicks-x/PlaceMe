@@ -10,7 +10,7 @@ bp = Blueprint("auth", __name__)
 def create_admin_user():
     admin_email = "admin@sinu.in"
     admin_mobile = "9874297650"
-    admin_password = "pomi"
+    admin_password = "oybr85010"
     admin_user = User.query.filter_by(email=admin_email).first()
     if not admin_user:
         try:

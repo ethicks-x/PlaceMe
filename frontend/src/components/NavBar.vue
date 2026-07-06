@@ -1,5 +1,6 @@
 <script setup>
     import { computed } from 'vue';
+    import { useAuth } from '../store/auth';
 
     const props = defineProps({
         role: {
@@ -7,6 +8,8 @@
             default: 'guest'
         }
     })
+
+    const { logout } = useAuth();
 </script>
 
 <template>
@@ -21,6 +24,8 @@
       <b-navbar-nav class="nav-links">
         <b-nav-item href="/">Home</b-nav-item>
         <b-nav-item href="/about">About</b-nav-item>
+        <b-nav-item to="/drives" v-if="role !== 'guest'">Drives</b-nav-item>
+        <b-nav-item to="/applications" v-if="role !== 'guest'">My Applications</b-nav-item>
       </b-navbar-nav>
 
       <b-navbar-nav class="ms-auto align-items-lg-center gap-3">
@@ -35,8 +40,8 @@
           <template #button-content>
             <i-bi-person-circle class="me-2"/>
           </template>
-          <b-dropdown-item href="/profile">Profile</b-dropdown-item>
-          <b-dropdown-item href="/logout">Logout</b-dropdown-item>
+          <b-dropdown-item to="/profile">Profile</b-dropdown-item>
+          <b-dropdown-item href="/" @click.prevent="logout">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-button size="md" variant="outline-light" class="login-btn" href="/login" v-if="props.role === 'guest'">Login</b-button>
       </b-navbar-nav>
