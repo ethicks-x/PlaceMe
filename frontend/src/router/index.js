@@ -1,6 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 import { useAuth } from "../store/auth";
 
+import AdminDashboardView from "../views/admin/Dashboard.vue";
+import AdminCompaniesView from "../views/admin/Companies.vue";
+import AdminStudentsView from "../views/admin/Students.vue";
+import AdminDrivesView from "../views/admin/Drives.vue";
+
 import HomeView from "../views/home.vue";
 import AboutView from "../views/about.vue";
 import LoginView from "../views/login.vue";
@@ -9,6 +14,7 @@ import ProfileView from "../views/user/Profile.vue";
 import DrivesView from "../views/user/Drives.vue";
 import ApplicationsView from "../views/user/Applications.vue";
 
+import CompanyDashboardView from "../views/company/Dashboard.vue";
 import CompanyRegisterView from "../views/company/Register.vue";
 import CompanyPendingView from "../views/company/Pending.vue";
 
@@ -23,6 +29,27 @@ const routes = [
   { path: "/applications", component: ApplicationsView, meta: { requiresAuth: true } },
   { path: "/company/register", component: CompanyRegisterView },
   { path: "/company/pending", component: CompanyPendingView, meta: { requiresAuth: true } },
+  { path: "/company/dashboard", component: CompanyDashboardView, meta: { requiresAuth: true } },
+  {
+    path: "/admin",
+    component: AdminDashboardView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: "/admin/companies",
+    component: AdminCompaniesView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: "/admin/students",
+    component: AdminStudentsView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: "/admin/drives",
+    component: AdminDrivesView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
 ];
 
 export const router = createRouter({
@@ -34,5 +61,8 @@ router.beforeEach((to) => {
   const { authState } = useAuth();
   if (to.meta.requiresAuth && !authState.isAuthenticated) {
     return { path: "/login" };
+  }
+  if (to.meta.requiresAdmin && authState.user?.role !== "admin") {
+    return { path: "/dashboard" };
   }
 });

@@ -141,6 +141,9 @@ def login_user():
     if not user or not user.check_password(password):
         return jsonify({"message": "Invalid email or password"}), 401
 
+    if not user.is_active:
+        return jsonify({"message": "This account has been deactivated."}), 401
+
     access_token, user_data = _issue_token_response(user)
 
     if remember_me:

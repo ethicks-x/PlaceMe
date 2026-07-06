@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from database.db import create_migration, db
-from routes import auth, company, user
+from routes import admin, auth, company, user
 from routes.auth import create_admin_user
 
 env_path = Path(".") / ".env"
@@ -50,6 +50,7 @@ create_migration(app)
 app.register_blueprint(auth.bp, url_prefix="/api/auth")
 app.register_blueprint(user.bp, url_prefix="/api")
 app.register_blueprint(company.bp, url_prefix="/api/company")
+app.register_blueprint(admin.bp, url_prefix="/api/admin")
 
 if __name__ == "__main__":
     try:

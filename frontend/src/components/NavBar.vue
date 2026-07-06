@@ -24,8 +24,17 @@
       <b-navbar-nav class="nav-links">
         <b-nav-item to="/">Home</b-nav-item>
         <b-nav-item to="/about">About</b-nav-item>
-        <b-nav-item to="/drives" v-if="role !== 'guest'">Drives</b-nav-item>
-        <b-nav-item to="/applications" v-if="role !== 'guest'">Applications</b-nav-item>
+        <template v-if="role === 'student'">
+          <b-nav-item to="/drives">Drives</b-nav-item>
+          <b-nav-item to="/applications">My Applications</b-nav-item>
+        </template>
+        <b-nav-item v-else-if="role === 'company'" to="/company/dashboard">Dashboard</b-nav-item>
+        <template v-else-if="role === 'admin'">
+          <b-nav-item to="/admin">Overview</b-nav-item>
+          <b-nav-item to="/admin/companies">Companies</b-nav-item>
+          <b-nav-item to="/admin/students">Students</b-nav-item>
+          <b-nav-item to="/admin/drives">Drives</b-nav-item>
+        </template>
       </b-navbar-nav>
 
       <b-navbar-nav class="ms-auto align-items-lg-center gap-3">

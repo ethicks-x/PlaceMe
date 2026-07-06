@@ -16,6 +16,7 @@ class User(db.Model):
         nullable=False,
         default="student",
     )
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def set_password(self, password):
@@ -59,7 +60,7 @@ class PlacementDrives(db.Model):
     eligibility = db.Column(db.String(150), nullable=False)
     drive_deadline = db.Column(db.DateTime, nullable=False)
     drive_status = db.Column(
-        db.Enum("Pending", "Approved", "Closed", name="drive_status"),
+        db.Enum("Pending", "Approved", "Rejected", "Closed", name="drive_status"),
         nullable=False,
         default="Pending",
     )

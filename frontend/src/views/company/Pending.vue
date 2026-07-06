@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import { router } from "../../router"
 
 const status = ref(null);
 const isLoading = ref(true);
@@ -9,6 +10,10 @@ const error = ref("");
 onMounted(async () => {
   try {
     const { data } = await axios.get("/api/company/status");
+    if (data.approvalStatus === "approved") {
+      router.replace("/company/dashboard");
+      return;
+    }
     status.value = data;
   } catch (err) {
     error.value = "Could not load your company status.";
@@ -23,7 +28,7 @@ onMounted(async () => {
     <div v-if="isLoading" class="text-muted">Loading...</div>
     <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
 
-    <div v-else class="status-card text-center">
+    <div v-else-if="status" class="status-card text-center">
       <template v-if="status.approvalStatus === 'pending'">
         <i class="bi bi-hourglass-split status-icon status-pending"></i>
         <h1 class="mb-3">Application Under Review</h1>
@@ -31,15 +36,6 @@ onMounted(async () => {
           Thanks for registering <strong>{{ status.companyName }}</strong
           >. An admin will review your details shortly. You'll be able to post placement drives
           once approved.
-        </p>
-      </template>
-
-      <template v-else-if="status.approvalStatus === 'approved'">
-        <i class="bi bi-check-circle status-icon status-approved"></i>
-        <h1 class="mb-3">You're Approved!</h1>
-        <p class="text-muted">
-          <strong>{{ status.companyName }}</strong> has been approved. Company tools are coming
-          soon.
         </p>
       </template>
 
@@ -67,9 +63,6 @@ onMounted(async () => {
 }
 .status-pending {
   color: #facc15;
-}
-.status-approved {
-  color: #34d399;
 }
 .status-rejected {
   color: #f87171;
