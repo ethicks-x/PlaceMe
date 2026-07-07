@@ -61,9 +61,8 @@ if __name__ == "__main__":
 
         server_host = os.getenv("SERVER_HOST")
         server_port = os.getenv("SERVER_PORT")
-        server_debug = os.getenv("SERVER_DEBUG")
 
-        app.run(host=server_host, port=server_port, debug=server_debug)
+        app.run(host=server_host, port=server_port, debug=False)
 
     except Exception as e:
         print(f"An error occurred: {e}")

@@ -63,7 +63,7 @@ const handleLogin = async () => {
       rememberMe: loginForm.value.rememberMe,
     });
   } catch (err) {
-    errors.value.login = err.message || "An error occurred.";
+    errors.value.login = err.response?.data?.message || "Could not log in.";
   } finally {
     isLoading.value = false;
   }
@@ -73,6 +73,10 @@ const handleSignup = async () => {
   console.log("Signing up with:", signupForm.value);
   errors.value.signup = ""
   isLoading.value = true;
+  if (signupForm.value.password !== signupForm.value.confirmPassword) {
+    errors.value.signup = "Passwords do not match."
+    return;
+  }
 
   try {
     await signup({
