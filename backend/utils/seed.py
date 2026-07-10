@@ -9,6 +9,7 @@ import random
 from app import app
 from database.db import db
 from database.models import Applications, CompanyProfile, PlacementDrives, StudentProfile, User
+from routes.auth import create_admin_user
 
 
 def seed_large_dataset():
@@ -336,3 +337,4 @@ if __name__ == "__main__":
         clear_seeded_data()
 
         seed_large_dataset()
+        create_admin_user()

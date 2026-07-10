@@ -53,6 +53,9 @@ def register_user():
     if User.query.filter_by(email=data.get("email")).first():
         return jsonify({"message": "This email is already registered"}), 409
 
+    if data.get("mobile") and User.query.filter_by(mobile=data.get("mobile")).first():
+        return jsonify({"message": "This mobile number is already registered"}), 409
+
     # Create New User
     try:
         new_user = User(
@@ -126,17 +129,15 @@ def register_company():
 @bp.route("/login", methods=["POST"])
 def login_user():
     data = request.get_json()
+
+    if not data or not data.get("email") or not data.get("password"):
+        return jsonify({"message": "Email and password are required"}), 400
+
     email = data.get("email")
     password = data.get("password")
     remember_me = data.get("rememberMe", False)
 
-    print(f"Login attempt for email: {email}, rememberMe: {remember_me}")
-
-    if not data or not email or not password:
-        return jsonify({"message": "Email and password are required"}), 400
-
     user = User.query.filter_by(email=email).first()
-    print(f"User found: {user}")
 
     if not user or not user.check_password(password):
         return jsonify({"message": "Invalid email or password"}), 401
