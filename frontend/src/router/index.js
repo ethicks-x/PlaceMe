@@ -17,6 +17,7 @@ import ApplicationsView from "../views/user/Applications.vue";
 import CompanyDashboardView from "../views/company/Dashboard.vue";
 import CompanyRegisterView from "../views/company/Register.vue";
 import CompanyPendingView from "../views/company/Pending.vue";
+import CompanyApplicantsView from "../views/company/Applicants.vue";
 
 const routes = [
   { path: "/", component: HomeView },
@@ -30,6 +31,11 @@ const routes = [
   { path: "/company/register", component: CompanyRegisterView },
   { path: "/company/pending", component: CompanyPendingView, meta: { requiresAuth: true } },
   { path: "/company/dashboard", component: CompanyDashboardView, meta: { requiresAuth: true } },
+  {
+    path: "/company/drives/:id/applicants",
+    component: CompanyApplicantsView,
+    meta: { requiresAuth: true },
+  },
   {
     path: "/admin",
     component: AdminDashboardView,

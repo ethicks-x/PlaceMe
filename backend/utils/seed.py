@@ -8,7 +8,7 @@ import random
 
 from app import app
 from database.db import db
-from database.models import Applications, CompanyProfile, PlacementDrives, User
+from database.models import Applications, CompanyProfile, PlacementDrives, StudentProfile, User
 
 
 def seed_large_dataset():
@@ -245,6 +245,69 @@ def seed_large_dataset():
 
     print("✅ Successfully staged 25 Dynamic Application Ties.")
 
+    degrees = [
+        "B.Tech Computer Science",
+        "B.Tech Information Technology",
+        "B.Tech Electronics & Communication",
+        "B.Tech Mechanical Engineering",
+        "B.Sc Computer Science",
+        "M.Tech Computer Science",
+        "MCA",
+    ]
+    skill_pool = [
+        "Python",
+        "Java",
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Vue.js",
+        "Node.js",
+        "SQL",
+        "MongoDB",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Machine Learning",
+        "Data Analysis",
+        "C++",
+        "Go",
+        "Git",
+        "REST APIs",
+    ]
+    bio_templates = [
+        "Aspiring {degree} graduate passionate about building reliable software.",
+        "{degree} student who enjoys solving problems with clean, tested code.",
+        "Motivated {degree} candidate looking to grow as a software engineer.",
+        "{degree} student with a strong interest in scalable backend systems.",
+    ]
+
+    students_list = []
+
+    for i in range(22):
+        f_name = first_names[i]
+        l_name = last_names[i]
+        email = f"{f_name.lower()}.{l_name.lower()}@university.edu"
+        mobile = f"98765432{i:02d}"
+
+        student_user = User(
+            email=email, mobile=mobile, full_name=f"{f_name} {l_name}", role="student"
+        )
+        student_user.set_password("student123")
+        db.session.add(student_user)
+        db.session.flush()  # Yields user_id for the profile mapping
+
+        degree = random.choice(degrees)
+        student_profile = StudentProfile(
+            user_id=student_user.user_id,
+            degree=degree,
+            graduation_year=random.randint(2025, 2028),
+            cgpa=round(random.uniform(6.0, 9.8), 2),
+            resume_url=f"https://example.com/resumes/{f_name.lower()}-{l_name.lower()}.pdf",
+            skills=", ".join(random.sample(skill_pool, k=random.randint(3, 6))),
+            bio=random.choice(bio_templates).format(degree=degree),
+        )
+        db.session.add(student_profile)
+
     # -------------------------------------------------------------
     # 5. COMMIT EVERYTHING TO THE DB FILE
     # -------------------------------------------------------------
@@ -256,9 +319,20 @@ def seed_large_dataset():
         print(f"\n❌ SEED FAILURE! Database state changes rolled back clean. Reason: {e}")
 
 
+def clear_seeded_data():
+    """Wipe previously-seeded demo data, but never touch real accounts
+    like the admin user. Deletes in FK-dependency order."""
+    Applications.query.delete()
+    PlacementDrives.query.delete()
+    CompanyProfile.query.delete()
+    StudentProfile.query.delete()
+    User.query.filter(User.role != "admin").delete()
+    db.session.commit()
+
+
 if __name__ == "__main__":
     with app.app_context():
-        db.drop_all()
         db.create_all()
+        clear_seeded_data()
 
         seed_large_dataset()

@@ -26,6 +26,18 @@ echo "${BOLD_CYAN}Starting Project..${NC}"
 sleep 2
 
 echo "${WHITE}---------------------------------------------------${NC}"
+echo "${DIM_WHITE}Installing backend dependencies..${NC}"
+cd backend
+uv sync
+cd ..
+
+echo "${WHITE}---------------------------------------------------${NC}"
+echo "${DIM_WHITE}Installing frontend dependencies..${NC}"
+cd frontend
+bun install
+cd ..
+
+echo "${WHITE}---------------------------------------------------${NC}"
 echo "${DIM_WHITE}Firing up backend..${NC}"
 cd backend 
 uv run app.py &>/dev/null &

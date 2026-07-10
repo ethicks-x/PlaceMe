@@ -1,11 +1,22 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import { useAuth } from "../../store/auth";
 
 const { authState } = useAuth();
 
-const form = ref({ fullName: "", mobile: "" });
+const isStudent = computed(() => authState.user?.role === "student");
+
+const form = ref({
+  fullName: "",
+  mobile: "",
+  degree: "",
+  graduationYear: "",
+  cgpa: "",
+  resumeUrl: "",
+  skills: "",
+  bio: "",
+});
 const isLoading = ref(true);
 const isSaving = ref(false);
 const error = ref("");
@@ -16,6 +27,12 @@ onMounted(async () => {
     const { data } = await axios.get("/api/profile");
     form.value.fullName = data.fullName || "";
     form.value.mobile = data.mobile || "";
+    form.value.degree = data.degree || "";
+    form.value.graduationYear = data.graduationYear || "";
+    form.value.cgpa = data.cgpa ?? "";
+    form.value.resumeUrl = data.resumeUrl || "";
+    form.value.skills = data.skills || "";
+    form.value.bio = data.bio || "";
   } catch (err) {
     error.value = "Could not load your profile.";
   } finally {
@@ -40,7 +57,7 @@ const handleSave = async () => {
 </script>
 
 <template>
-  <b-container class="profile-wrapper py-5" style="max-width: 500px">
+  <b-container class="profile-wrapper py-5" style="max-width: 600px">
     <h1 class="mb-4">My Profile</h1>
 
     <div v-if="isLoading" class="text-muted">Loading profile...</div>
@@ -62,6 +79,77 @@ const handleSave = async () => {
         <input type="text" class="form-control" v-model="form.mobile" required />
       </div>
 
+      <template v-if="isStudent">
+        <hr class="section-divider" />
+        <h2 class="section-title">Academic &amp; Resume</h2>
+
+        <div class="mb-3">
+          <label class="form-label" for="profileDegree">Degree / Branch</label>
+          <input
+            id="profileDegree"
+            type="text"
+            class="form-control"
+            v-model="form.degree"
+            placeholder="e.g. B.Tech Computer Science"
+          />
+        </div>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <label class="form-label" for="profileGradYear">Graduation Year</label>
+            <input
+              id="profileGradYear"
+              type="number"
+              class="form-control"
+              v-model="form.graduationYear"
+              placeholder="2027"
+            />
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label" for="profileCgpa">CGPA</label>
+            <input
+              id="profileCgpa"
+              type="number"
+              step="0.01"
+              min="0"
+              max="10"
+              class="form-control"
+              v-model="form.cgpa"
+              placeholder="8.5"
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="profileResume">Resume URL</label>
+          <input
+            id="profileResume"
+            type="url"
+            class="form-control"
+            v-model="form.resumeUrl"
+            placeholder="https://..."
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="profileSkills">Skills</label>
+          <input
+            id="profileSkills"
+            type="text"
+            class="form-control"
+            v-model="form.skills"
+            placeholder="Python, React, SQL"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="profileBio">Bio</label>
+          <textarea
+            id="profileBio"
+            class="form-control"
+            rows="3"
+            v-model="form.bio"
+            placeholder="A short summary about yourself"
+          ></textarea>
+        </div>
+      </template>
+
       <button type="submit" class="btn btn-custom" :disabled="isSaving">Save Changes</button>
     </form>
   </b-container>
@@ -80,6 +168,16 @@ const handleSave = async () => {
 }
 .form-label {
   color: #94a3b8;
+}
+
+.section-divider {
+  border-color: rgba(255, 255, 255, 0.1);
+  margin: 2rem 0 1.5rem;
+}
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
 .btn-custom {

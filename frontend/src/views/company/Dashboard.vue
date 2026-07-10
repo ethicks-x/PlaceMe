@@ -1,7 +1,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import { router } from "../../router";
 
+defineOptions({
+  name: "CompanyDashboard",
+});
+
+const company = ref(null);
 const drives = ref([]);
 const isLoading = ref(true);
 const error = ref("");
@@ -22,7 +28,21 @@ const fetchDrives = async () => {
   }
 };
 
-onMounted(fetchDrives);
+onMounted(async () => {
+  try {
+    const { data } = await axios.get("/api/company/status");
+    if (data.approvalStatus !== "approved") {
+      router.replace("/company/pending");
+      return;
+    }
+    company.value = data;
+    await fetchDrives();
+  } catch (err) {
+    error.value = "Could not load your company details.";
+  } finally {
+    isLoading.value = false;
+  }
+});
 
 const handleCreate = async () => {
   formError.value = "";
@@ -57,45 +77,172 @@ const statusBadgeClass = (status) =>
 
 <template>
   <b-container class="py-5">
-    <h1 class="mb-4">Company Dashboard</h1>
+    <h1 class="mb-4">
+      Company Dashboard
+    </h1>
 
-    <div class="form-card mb-5">
-      <h3 class="mb-3">Post a New Drive</h3>
-
-      <div v-if="formError" class="alert alert-danger py-2">{{ formError }}</div>
-      <div v-if="formSuccess" class="alert alert-success py-2">{{ formSuccess }}</div>
-
-      <form @submit.prevent="handleCreate">
-        <div class="mb-3">
-          <label class="form-label">Job Title</label>
-          <input type="text" class="form-control" v-model="form.jobTitle" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Job Description</label>
-          <textarea class="form-control" rows="3" v-model="form.jobDesc" required></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Eligibility Criteria</label>
-          <input type="text" class="form-control" v-model="form.eligibility" required />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Application Deadline</label>
-          <input type="date" class="form-control" v-model="form.deadline" required />
-        </div>
-        <button type="submit" class="btn btn-custom" :disabled="isSubmitting">
-          Submit for Approval
-        </button>
-      </form>
+    <div
+      v-if="isLoading"
+      class="text-muted"
+    >
+      Loading...
     </div>
-
-    <h3 class="mb-3">Your Drives</h3>
-    <div v-if="isLoading" class="text-muted">Loading drives...</div>
-    <div v-else-if="error" class="alert alert-danger">{{ error }}</div>
-    <div v-else-if="drives.length === 0" class="text-muted">
-      You haven't posted any drives yet.
+    <div
+      v-else-if="error"
+      class="alert alert-danger"
+    >
+      {{ error }}
     </div>
+    <template v-else-if="company">
+      <div class="details-card mb-5">
+        <h3 class="mb-3">
+          Company Details
+        </h3>
+        <dl class="details-grid mb-0">
+          <dt>Company Name</dt>
+          <dd>{{ company.companyName }}</dd>
+          <dt>Website</dt>
+          <dd>
+            <a
+              :href="company.website"
+              target="_blank"
+              rel="noopener"
+              class="switch-link"
+            >{{
+              company.website
+            }}</a>
+          </dd>
+          <dt>HR Contact</dt>
+          <dd>{{ company.hrContact }}</dd>
+          <dt>Approval Status</dt>
+          <dd><span class="badge badge-approved">{{ company.approvalStatus }}</span></dd>
+        </dl>
+      </div>
 
-    <div v-else class="admin-card">
+      <div class="form-card mb-5">
+        <h3 class="mb-3">
+          Post a New Drive
+        </h3>
+        
+        <div
+          v-if="formError"
+          class="alert alert-danger py-2"
+        >
+          {{ formError }}
+        </div>
+        <div
+          v-if="formSuccess"
+          class="alert alert-success py-2"
+        >
+          {{ formSuccess }}
+        </div>
+        <form @submit.prevent="handleCreate">
+          <div class="mb-3">
+            <label class="form-label">Job Title</label>
+            <input
+              v-model="form.jobTitle"
+              type="text"
+              class="form-control"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Job Description</label>
+            <textarea
+              v-model="form.jobDesc"
+              class="form-control"
+              rows="3"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Eligibility Criteria</label>
+            <input
+              v-model="form.eligibility"
+              type="text"
+              class="form-control"
+              required
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Application Deadline</label>
+            <input
+              v-model="form.deadline"
+              type="date"
+              class="form-control"
+              required
+            >
+          </div>
+          <button
+            type="submit"
+            class="btn btn-custom"
+            :disabled="isSubmitting"
+          >
+            Submit for Approval
+          </button>
+        </form>
+
+        <h3 class="mb-3">
+          Your Drives
+        </h3>
+        <div
+          v-if="drives.length === 0"
+          class="text-muted"
+        >
+          You haven't posted any drives yet.
+        </div>
+
+        <div
+          v-else
+          class="admin-card"
+        >
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 admin-table">
+              <thead>
+                <tr>
+                  <th>Role</th>
+                  <th>Deadline</th>
+                  <th>Status</th>
+                  <th>Applicants</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="drive in drives"
+                  :key="drive.id"
+                >
+                  <td>{{ drive.jobTitle }}</td>
+                  <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
+                  <td>
+                    <span
+                      class="badge"
+                      :class="statusBadgeClass(drive.status)"
+                    >{{
+                      drive.status
+                    }}</span>
+                  </td>
+                  <td>{{ drive.applicantCount }}</td>
+                  <td>
+                    <router-link
+                      :to="`/company/drives/${drive.id}/applicants`"
+                      class="switch-link"
+                    >
+                      View Applicants
+                    </router-link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div
+      v-else
+      class="admin-card"
+    >
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 admin-table">
           <thead>
@@ -106,11 +253,17 @@ const statusBadgeClass = (status) =>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="drive in drives" :key="drive.id">
+            <tr
+              v-for="drive in drives"
+              :key="drive.id"
+            >
               <td>{{ drive.jobTitle }}</td>
               <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
               <td>
-                <span class="badge" :class="statusBadgeClass(drive.status)">{{ drive.status }}</span>
+                <span
+                  class="badge"
+                  :class="statusBadgeClass(drive.status)"
+                >{{ drive.status }}</span>
               </td>
             </tr>
           </tbody>
@@ -206,4 +359,3 @@ textarea.form-control {
   color: #94a3b8;
 }
 </style>
-

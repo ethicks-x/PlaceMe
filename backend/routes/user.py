@@ -4,19 +4,34 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from database.db import db
-from database.models import Applications, CompanyProfile, PlacementDrives, User
+from database.models import Applications, CompanyProfile, PlacementDrives, StudentProfile, User
 
 bp = Blueprint("user", __name__)
 
 
 def _serialize_user(user):
-    return {
+    data = {
         "id": user.user_id,
         "email": user.email,
         "mobile": user.mobile,
         "fullName": user.full_name,
         "role": user.role,
     }
+
+    if user.role == "student":
+        profile = StudentProfile.query.filter_by(user_id=user.user_id).first()
+        data.update(
+            {
+                "degree": profile.degree if profile else None,
+                "graduationYear": profile.graduation_year if profile else None,
+                "cgpa": profile.cgpa if profile else None,
+                "resumeUrl": profile.resume_url if profile else None,
+                "skills": profile.skills if profile else None,
+                "bio": profile.bio if profile else None,
+            }
+        )
+
+    return data
 
 
 def _serialize_drive(drive, applied_drive_ids):
@@ -61,6 +76,36 @@ def update_profile():
 
     if full_name:
         user.full_name = full_name
+
+    if full_name:
+        user.full_name = full_name
+
+    if user.role == "student":
+        profile = StudentProfile.query.filter_by(user_id=user.user_id).first()
+        if not profile:
+            profile = StudentProfile(user_id=user.user_id)
+            db.session.add(profile)
+
+        if "degree" in data:
+            profile.degree = data.get("degree") or None
+        if "graduationYear" in data:
+            grad_year = data.get("graduationYear")
+            try:
+                profile.graduation_year = int(grad_year) if grad_year not in (None, "") else None
+            except TypeError, ValueError:
+                return jsonify({"message": "Graduation year must be a number"}), 400
+        if "cgpa" in data:
+            cgpa = data.get("cgpa")
+            try:
+                profile.cgpa = float(cgpa) if cgpa not in (None, "") else None
+            except TypeError, ValueError:
+                return jsonify({"message": "CGPA must be a number"}), 400
+        if "resumeUrl" in data:
+            profile.resume_url = data.get("resumeUrl") or None
+        if "skills" in data:
+            profile.skills = data.get("skills") or None
+        if "bio" in data:
+            profile.bio = data.get("bio") or None
 
     try:
         db.session.commit()
