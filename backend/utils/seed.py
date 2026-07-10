@@ -227,7 +227,9 @@ def seed_large_dataset():
     existing_applications = set()
     created_applications_count = 0
 
-    while created_applications_count < 25:
+    target_applications = min(25, len(students_list) * len(drives_list))
+
+    while created_applications_count < target_applications:
         student_id = random.choice(students_list)
         drive_id = random.choice(drives_list)
         pair = (student_id, drive_id)
@@ -244,7 +246,7 @@ def seed_large_dataset():
             db.session.add(application)
             created_applications_count += 1
 
-    print("✅ Successfully staged 25 Dynamic Application Ties.")
+    print(f"✅ Successfully staged {created_applications_count} Dynamic Application Ties.")
 
     degrees = [
         "B.Tech Computer Science",
@@ -282,24 +284,13 @@ def seed_large_dataset():
         "{degree} student with a strong interest in scalable backend systems.",
     ]
 
-    students_list = []
-
-    for i in range(22):
+    for i, student_user_id in enumerate(students_list):
         f_name = first_names[i]
         l_name = last_names[i]
-        email = f"{f_name.lower()}.{l_name.lower()}@university.edu"
-        mobile = f"98765432{i:02d}"
-
-        student_user = User(
-            email=email, mobile=mobile, full_name=f"{f_name} {l_name}", role="student"
-        )
-        student_user.set_password("student123")
-        db.session.add(student_user)
-        db.session.flush()  # Yields user_id for the profile mapping
 
         degree = random.choice(degrees)
         student_profile = StudentProfile(
-            user_id=student_user.user_id,
+            user_id=student_user_id,
             degree=degree,
             graduation_year=random.randint(2025, 2028),
             cgpa=round(random.uniform(6.0, 9.8), 2),

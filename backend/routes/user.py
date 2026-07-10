@@ -72,10 +72,7 @@ def update_profile():
     if mobile and mobile != user.mobile:
         if User.query.filter_by(mobile=mobile).first():
             return jsonify({"message": "This mobile number is already in use"}), 409
-    user.mobile = mobile
-
-    if full_name:
-        user.full_name = full_name
+        user.mobile = mobile
 
     if full_name:
         user.full_name = full_name
