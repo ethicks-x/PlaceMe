@@ -8,6 +8,13 @@ const error = ref("");
 const search = ref("");
 const statusFilter = ref("");
 const actingId = ref(null);
+const selectedCompany = ref(null);
+const showModal = ref(false);
+
+const viewCompany = (company) => {
+  selectedCompany.value = company;
+  showModal.value = true;
+};
 
 const fetchCompanies = async () => {
   isLoading.value = true;
@@ -86,10 +93,14 @@ const statusBadgeClass = (status) =>
           <tbody>
             <tr v-for="company in companies" :key="company.id">
               <td>
-                <div class="fw-bold">{{ company.companyName }}</div>
-                <a :href="company.website" target="_blank" rel="noopener" class="switch-link small">{{
-                  company.website
-                }}</a>
+                <button class="btn-link-name" @click="viewCompany(company)">
+                  {{ company.companyName }}
+                </button>
+                <div>
+                  <a :href="company.website" target="_blank" rel="noopener" class="switch-link small">{{
+                    company.website
+                  }}</a>
+                </div>
               </td>
               <td>
                 <div>{{ company.email }}</div>
@@ -137,10 +148,80 @@ const statusBadgeClass = (status) =>
         </table>
       </div>
     </div>
+    <b-modal v-model="showModal" title="Company Details" no-footer>
+      <div v-if="selectedCompany" class="company-detail">
+        <h3 class="mb-1">{{ selectedCompany.companyName }}</h3>
+        <p class="text-muted mb-3">{{ selectedCompany.email }}</p>
+
+        <dl class="detail-grid">
+          <dt>Website</dt>
+          <dd>
+            <a :href="selectedCompany.website" target="_blank" rel="noopener" class="switch-link">{{
+              selectedCompany.website
+            }}</a>
+          </dd>
+          <dt>HR Contact</dt>
+          <dd>{{ selectedCompany.hrContact }}</dd>
+          <dt>Approval Status</dt>
+          <dd>
+            <span class="badge" :class="statusBadgeClass(selectedCompany.approvalStatus)">{{
+              selectedCompany.approvalStatus
+            }}</span>
+          </dd>
+          <dt>Account</dt>
+          <dd>
+            <span
+              class="badge"
+              :class="selectedCompany.isActive ? 'badge-approved' : 'badge-rejected'"
+              >{{ selectedCompany.isActive ? "Active" : "Deactivated" }}</span
+            >
+          </dd>
+        </dl>
+
+        <div v-if="selectedCompany.remarks" class="mt-3">
+          <h4 class="bio-heading">Remarks</h4>
+          <p class="mb-0">{{ selectedCompany.remarks }}</p>
+        </div>
+      </div>
+    </b-modal>
   </b-container>
 </template>
 
 <style scoped>
+.btn-link-name {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn-link-name:hover {
+  color: #38bdf8;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0;
+}
+.detail-grid dt {
+  color: #94a3b8;
+  font-weight: 500;
+}
+.detail-grid dd {
+  margin: 0;
+}
+
+.bio-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
 .search-input,
 .status-select {
   background-color: rgba(15, 23, 42, 0.6) !important;

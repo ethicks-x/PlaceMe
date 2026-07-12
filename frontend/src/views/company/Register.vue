@@ -79,7 +79,7 @@ const handleSubmit = async () => {
             type="text"
             class="form-control"
             id="hrContact"
-            placeholder="HR Contact Name"
+            placeholder="HR Name"
             v-model="form.hrContact"
             required
           />

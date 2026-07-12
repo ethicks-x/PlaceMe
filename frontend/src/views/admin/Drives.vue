@@ -5,14 +5,17 @@ import axios from "axios";
 const drives = ref([]);
 const isLoading = ref(true);
 const error = ref("");
+const search = ref("");
 const statusFilter = ref("");
 const actingId = ref(null);
+const selectedDrive = ref(null);
+const showModal = ref(false);
 
 const fetchDrives = async () => {
   isLoading.value = true;
   try {
     const { data } = await axios.get("/api/admin/drives", {
-      params: { status: statusFilter.value || undefined },
+      params: { search: search.value || undefined, status: statusFilter.value || undefined },
     });
     drives.value = data;
   } catch (err) {
@@ -20,6 +23,11 @@ const fetchDrives = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const viewDrive = (drive) => {
+  selectedDrive.value = drive;
+  showModal.value = true;
 };
 
 onMounted(fetchDrives);
@@ -51,6 +59,13 @@ const statusBadgeClass = (status) =>
     <h1 class="mb-4">Manage Placement Drives</h1>
 
     <div class="d-flex gap-3 mb-4 flex-wrap">
+      <input
+        type="text"
+        class="form-control search-input"
+        placeholder="Search by job title or company"
+        v-model="search"
+        @keyup.enter="fetchDrives"
+      />
       <select class="form-select status-select" v-model="statusFilter" @change="fetchDrives">
         <option value="">All Statuses</option>
         <option value="Pending">Pending</option>
@@ -58,6 +73,7 @@ const statusBadgeClass = (status) =>
         <option value="Rejected">Rejected</option>
         <option value="Closed">Closed</option>
       </select>
+      <button class="btn btn-custom" @click="fetchDrives">Search</button>
     </div>
 
     <div v-if="isLoading" class="text-muted">Loading drives...</div>
@@ -78,7 +94,11 @@ const statusBadgeClass = (status) =>
           </thead>
           <tbody>
             <tr v-for="drive in drives" :key="drive.id">
-              <td>{{ drive.jobTitle }}</td>
+              <td>
+                <button class="btn-link-name" @click="viewDrive(drive)">
+                  {{ drive.jobTitle }}
+                </button>
+              </td>
               <td>{{ drive.companyName }}</td>
               <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
               <td>
@@ -109,15 +129,98 @@ const statusBadgeClass = (status) =>
         </table>
       </div>
     </div>
+    
+    <b-modal v-model="showModal" title="Drive Details" no-footer>
+      <div v-if="selectedDrive" class="drive-detail">
+        <h3 class="mb-1">{{ selectedDrive.jobTitle }}</h3>
+        <p class="text-muted mb-3">{{ selectedDrive.companyName }}</p>
+
+        <dl class="detail-grid">
+          <dt>Deadline</dt>
+          <dd>{{ new Date(selectedDrive.deadline).toLocaleDateString() }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <span class="badge" :class="statusBadgeClass(selectedDrive.status)">{{
+              selectedDrive.status
+            }}</span>
+          </dd>
+        </dl>
+
+        <div class="mt-3">
+          <h4 class="bio-heading">Job Description</h4>
+          <p class="mb-0">{{ selectedDrive.jobDesc }}</p>
+        </div>
+        <div class="mt-3">
+          <h4 class="bio-heading">Eligibility Criteria</h4>
+          <p class="mb-0">{{ selectedDrive.eligibility }}</p>
+        </div>
+      </div>
+    </b-modal>
   </b-container>
 </template>
 
 <style scoped>
+.search-input {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  max-width: 320px;
+}
+.search-input::placeholder {
+  color: #64748b;
+}
+
 .status-select {
   background-color: rgba(15, 23, 42, 0.6) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #f8fafc !important;
   max-width: 240px;
+}
+
+.btn-custom {
+  background-color: #38bdf8;
+  color: #020617;
+  font-weight: 700;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.5rem;
+}
+.btn-custom:hover {
+  background-color: #34d399;
+}
+
+.btn-link-name {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn-link-name:hover {
+  color: #38bdf8;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0;
+}
+.detail-grid dt {
+  color: #94a3b8;
+  font-weight: 500;
+}
+.detail-grid dd {
+  margin: 0;
+}
+
+.bio-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
 }
 
 .admin-card {

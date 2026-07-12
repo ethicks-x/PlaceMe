@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import { router } from "../../router";
 
@@ -11,11 +11,23 @@ const company = ref(null);
 const drives = ref([]);
 const isLoading = ref(true);
 const error = ref("");
+const search = ref("");
+
+const filteredDrives = computed(() => {
+    const query = search.value.trim().toLowerCase();
+    if (!query) return drives.value;
+    return drives.value.filter(
+        (drive) => 
+            drive.jobTitle.toLowerCase().includes(query) ||
+            drive.status.toLowerCase().includes(query),
+    );
+});
 
 const form = ref({ jobTitle: "", jobDesc: "", eligibility: "", deadline: "" });
 const isSubmitting = ref(false);
 const formError = ref("");
 const formSuccess = ref("");
+const todayDate = new Date().toISOString().split("T")[0];
 
 const fetchDrives = async () => {
   try {
@@ -48,6 +60,11 @@ const handleCreate = async () => {
   formError.value = "";
   formSuccess.value = "";
   isSubmitting.value = true;
+
+  if (form.value.deadline < todayDate) {
+    formError.value = "The application deadline must be in the future.";
+    return;
+  }
 
   try {
     await axios.post("/api/company/drives", {
@@ -170,6 +187,7 @@ const statusBadgeClass = (status) =>
               v-model="form.deadline"
               type="date"
               class="form-control"
+              :min="todayDate"
               required
             >
           </div>
@@ -192,6 +210,19 @@ const statusBadgeClass = (status) =>
           You haven't posted any drives yet.
         </div>
 
+
+        <template v-else>
+          <input
+            type="text"
+            class="form-control search-input mb-3"
+            placeholder="Search by role or status"
+            v-model="search"
+          />
+
+          <div v-if="filteredDrives.length === 0" class="text-muted">
+            No drives match your search.
+          </div>
+
         <div
           v-else
           class="admin-card"
@@ -209,7 +240,7 @@ const statusBadgeClass = (status) =>
               </thead>
               <tbody>
                 <tr
-                  v-for="drive in drives"
+                  v-for="drive in filteredDrives"
                   :key="drive.id"
                 >
                   <td>{{ drive.jobTitle }}</td>
@@ -236,6 +267,7 @@ const statusBadgeClass = (status) =>
             </table>
           </div>
         </div>
+        </template>
       </div>
     </template>
 
@@ -274,6 +306,17 @@ const statusBadgeClass = (status) =>
 </template>
 
 <style scoped>
+.search-input {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 420px;
+}
+.search-input::placeholder {
+  color: #64748b;
+}
 .form-card,
 .admin-card {
   background: rgba(30, 41, 59, 0.65);

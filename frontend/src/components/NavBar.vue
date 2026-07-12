@@ -22,9 +22,8 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav class="nav-links">
-        <b-nav-item to="/">Home</b-nav-item>
-        <b-nav-item to="/about">About</b-nav-item>
         <template v-if="role === 'student'">
+        <b-nav-item to="/dashboard">Dashboard</b-nav-item>
           <b-nav-item to="/drives">Drives</b-nav-item>
           <b-nav-item to="/applications">My Applications</b-nav-item>
         </template>
@@ -34,6 +33,10 @@
           <b-nav-item to="/admin/companies">Companies</b-nav-item>
           <b-nav-item to="/admin/students">Students</b-nav-item>
           <b-nav-item to="/admin/drives">Drives</b-nav-item>
+        </template>
+        <template v-else>
+            <b-nav-item to="/">Home</b-nav-item>
+            <b-nav-item to="/about">About</b-nav-item>
         </template>
       </b-navbar-nav>
 

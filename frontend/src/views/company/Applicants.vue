@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 
@@ -12,6 +12,17 @@ const isLoading = ref(true);
 const error = ref("");
 const actingId = ref(null);
 const actionError = ref("");
+const search = ref("");
+
+const filteredApplicants = computed(() => {
+    const query = search.value.trim().toLowerCase();
+    if (!query) return applicants.value;
+    return applicants.value.filter((applicant) => 
+        applicant.studentName.toLowerCase().includes(query) ||
+        applicant.studentEmail.toLowerCase().includes(query) ||
+        applicant.status.toLowerCase().includes(query),
+    );
+});
 
 const selectedApplicant = ref(null);
 const showModal = ref(false);
@@ -72,6 +83,17 @@ const statusBadgeClass = (status) =>
         No one has applied to this drive yet.
       </div>
 
+      <template v-else>
+        <input
+          type="text"
+          class="form-control search-input mb-3"
+          placeholder="Search by name, email, or status"
+          v-model="search"
+        />
+
+        <div v-if="filteredApplicants.length === 0" class="text-muted">
+          No applicants match your search.
+        </div>
       <div v-else class="admin-card">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0 admin-table">
@@ -85,7 +107,7 @@ const statusBadgeClass = (status) =>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="applicant in applicants" :key="applicant.id">
+              <tr v-for="applicant in filteredApplicants" :key="applicant.id">
                 <td>
                   <button class="btn-link-name" @click="viewApplicant(applicant)">
                     {{ applicant.studentName }}
@@ -134,6 +156,7 @@ const statusBadgeClass = (status) =>
           </table>
         </div>
       </div>
+      </template>
     </template>
     <b-modal v-model="showModal" title="Applicant Details" no-footer>
       <div v-if="selectedApplicant" class="applicant-detail">
@@ -181,6 +204,17 @@ const statusBadgeClass = (status) =>
 </template>
 
 <style scoped>
+.search-input {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 420px;
+}
+.search-input::placeholder {
+  color: #64748b;
+}
 .btn-link-name {
   background: none;
   border: none;

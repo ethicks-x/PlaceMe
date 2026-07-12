@@ -1,10 +1,22 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 
 const applications = ref([]);
 const isLoading = ref(true);
 const error = ref("");
+const search = ref("");
+
+const filteredApplications = computed(() => {
+  const query = search.value.trim().toLowerCase();
+  if (!query) return applications.value;
+  return applications.value.filter(
+    (appl) =>
+      appl.companyName.toLowerCase().includes(query) ||
+      appl.jobTitle.toLowerCase().includes(query) ||
+      appl.status.toLowerCase().includes(query),
+  );
+});
 
 onMounted(async () => {
   try {
@@ -36,7 +48,19 @@ const statusClass = (status) =>
       You haven't applied to any drives yet.
     </div>
 
-    <div v-else class="applications-card">
+    <template v-else>
+      <input
+        type="text"
+        class="form-control search-input mb-4"
+        placeholder="Search by company, role, or status"
+        v-model="search"
+      />
+
+      <div v-if="filteredApplications.length === 0" class="text-muted">
+        No applications match your search.
+      </div>
+
+      <div v-else class="applications-card">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 applications-table">
           <thead>
@@ -48,7 +72,7 @@ const statusClass = (status) =>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="appl in applications" :key="appl.id">
+            <tr v-for="appl in filteredApplications" :key="appl.id">
               <td>{{ appl.companyName }}</td>
               <td>{{ appl.jobTitle }}</td>
               <td>{{ new Date(appl.appliedDate).toLocaleDateString() }}</td>
@@ -59,12 +83,24 @@ const statusClass = (status) =>
           </tbody>
         </table>
       </div>
-    </div>
+        </div>
+    </template>
 
   </b-container>
 </template>
 
 <style scoped>
+.search-input {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 420px;
+}
+.search-input::placeholder {
+  color: #64748b;
+}
 .applications-card {
     background: rgba(30, 41, 59, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.1);

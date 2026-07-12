@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 
 const drives = ref([]);
@@ -7,6 +7,18 @@ const isLoading = ref(true);
 const error = ref("");
 const applyingId = ref(null);
 const applyError = ref("");
+const search = ref("");
+
+const filteredDrives = computed(() => {
+  const query = search.value.trim().toLowerCase();
+  if (!query) return drives.value;
+  return drives.value.filter(
+    (drive) =>
+      drive.jobTitle.toLowerCase().includes(query) ||
+      drive.companyName.toLowerCase().includes(query) ||
+      drive.eligibility.toLowerCase().includes(query),
+  );
+});
 
 const fetchDrives = async () => {
   try {
@@ -47,9 +59,19 @@ const applyToDrive = async (driveId) => {
     </div>
 
     <div v-else>
+      <input
+        type="text"
+        class="form-control search-input mb-4"
+        placeholder="Search by role, company, or eligibility"
+        v-model="search"
+      />
       <div v-if="applyError" class="alert alert-danger py-2">{{ applyError }}</div>
 
-      <div v-for="drive in drives" :key="drive.id" class="drive-card mb-3">
+      <div v-if="filteredDrives.length === 0" class="text-muted">
+        No drives match your search.
+      </div>
+
+      <div v-for="drive in filteredDrives" :key="drive.id" class="drive-card mb-3">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
           <div>
             <h3 class="mb-1">{{ drive.jobTitle }}</h3>
@@ -77,6 +99,18 @@ const applyToDrive = async (driveId) => {
 </template>
 
 <style scoped>
+.search-input {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 420px;
+}
+.search-input::placeholder {
+  color: #64748b;
+}
+
 .drive-card {
   background: rgba(30, 41, 59, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.1);
