@@ -1,11 +1,12 @@
 from functools import wraps
 
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import get_jwt, jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from sqlalchemy import or_
 
 from database.db import db
 from database.models import Applications, CompanyProfile, PlacementDrives, User
+from utils.tasks import notify_chat_task
 
 bp = Blueprint("admin", __name__)
 
@@ -19,6 +20,18 @@ def admin_required(fn):
         return fn(*args, **kwargs)
 
     return wrapper
+
+
+def current_admin_name():
+    admin = User.query.get(int(get_jwt_identity()))
+    return admin.full_name if admin else "An Admin"
+
+
+def notify(message):
+    try:
+        notify_chat_task.delay(message)
+    except Exception as e:
+        print(f"Failed to queue chat notifications: {e}")
 
 
 def _serialize_company(profile):
@@ -87,6 +100,7 @@ def approve_company(company_id):
 
     company.approval_status = "approved"
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} approved company "{company.company_name}".')
     return jsonify(_serialize_company(company)), 200
 
 
@@ -101,6 +115,7 @@ def reject_company(company_id):
     company.approval_status = "rejected"
     company.remarks = data.get("remarks") or "Rejected by admin."
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} rejected company "{company.company_name}".')
     return jsonify(_serialize_company(company)), 200
 
 
@@ -114,6 +129,7 @@ def activate_company(company_id):
     user = User.query.get(company.user_id)
     user.is_active = True
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} reactivated company "{company.company_name}".')
     return jsonify(_serialize_company(company)), 200
 
 
@@ -127,6 +143,7 @@ def deactivate_company(company_id):
     user = User.query.get(company.user_id)
     user.is_active = False
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} deactivated company "{company.company_name}".')
     return jsonify(_serialize_company(company)), 200
 
 
@@ -158,6 +175,7 @@ def activate_student(user_id):
 
     user.is_active = True
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} reactivated student "{user.full_name}".')
     return jsonify(_serialize_student(user)), 200
 
 
@@ -170,6 +188,7 @@ def deactivate_student(user_id):
 
     user.is_active = False
     db.session.commit()
+    notify_chat_task(f'{current_admin_name()} deactivated student "{user.full_name}".')
     return jsonify(_serialize_student(user)), 200
 
 
@@ -180,10 +199,23 @@ def deactivate_student(user_id):
 @admin_required
 def list_drives():
     status = request.args.get("status")
+    search = request.args.get("search", "").strip()
 
     query = PlacementDrives.query
     if status:
         query = query.filter_by(drive_status=status)
+    if search:
+        like = f"%{search}%"
+        matching_company_ids = [
+            c.company_id
+            for c in CompanyProfile.query.filter(CompanyProfile.company_name.ilike(like)).all()
+        ]
+        query = query.filter(
+            or_(
+                PlacementDrives.job_title.ilike(like),
+                PlacementDrives.company_id.in_(matching_company_ids),
+            )
+        )
 
     drives = query.order_by(PlacementDrives.drive_id.desc()).all()
     return jsonify([_serialize_drive(d) for d in drives]), 200
@@ -198,6 +230,11 @@ def approve_drive(drive_id):
 
     drive.drive_status = "Approved"
     db.session.commit()
+    company = CompanyProfile.query.get(drive.company_id)
+    company_name = company.company_name if company else "Unknown"
+    notify_chat_task(
+        f'{current_admin_name()} approved drive "{drive.job_title}" ({company_name}).'
+    )
     return jsonify(_serialize_drive(drive)), 200
 
 
@@ -210,6 +247,11 @@ def reject_drive(drive_id):
 
     drive.drive_status = "Rejected"
     db.session.commit()
+    company = CompanyProfile.query.get(drive.company_id)
+    company_name = company.company_name if company else "Unknown"
+    notify_chat_task(
+        f'{current_admin_name()} rejected drive "{drive.job_title}" ({company_name}).'
+    )
     return jsonify(_serialize_drive(drive)), 200
 
 
