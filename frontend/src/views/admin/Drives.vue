@@ -154,6 +154,14 @@ const statusBadgeClass = (status) =>
           <h4 class="bio-heading">Eligibility Criteria</h4>
           <p class="mb-0">{{ selectedDrive.eligibility }}</p>
         </div>
+        <div class="mt-3">
+          <h4 class="bio-heading">Requirements</h4>
+          <p class="mb-0">
+            <span>Min CGPA {{ selectedDrive.minCgpa }}</span>
+            <span> &middot; </span>
+            <span>{{ selectedDrive.eligibleGraduationYear }} batch only</span>
+          </p>
+        </div>
       </div>
     </b-modal>
   </b-container>

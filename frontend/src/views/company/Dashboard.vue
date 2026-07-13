@@ -23,12 +23,6 @@ const filteredDrives = computed(() => {
     );
 });
 
-const form = ref({ jobTitle: "", jobDesc: "", eligibility: "", deadline: "" });
-const isSubmitting = ref(false);
-const formError = ref("");
-const formSuccess = ref("");
-const todayDate = new Date().toISOString().split("T")[0];
-
 const fetchDrives = async () => {
   try {
     const { data } = await axios.get("/api/company/drives");
@@ -55,33 +49,6 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
-
-const handleCreate = async () => {
-  formError.value = "";
-  formSuccess.value = "";
-  isSubmitting.value = true;
-
-  if (form.value.deadline < todayDate) {
-    formError.value = "The application deadline must be in the future.";
-    return;
-  }
-
-  try {
-    await axios.post("/api/company/drives", {
-      jobTitle: form.value.jobTitle,
-      jobDesc: form.value.jobDesc,
-      eligibility: form.value.eligibility,
-      deadline: new Date(form.value.deadline).toISOString(),
-    });
-    formSuccess.value = "Drive submitted for admin approval.";
-    form.value = { jobTitle: "", jobDesc: "", eligibility: "", deadline: "" };
-    await fetchDrives();
-  } catch (err) {
-    formError.value = err.response?.data?.message || "Failed to create drive.";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
 
 const statusBadgeClass = (status) =>
   ({
@@ -135,81 +102,17 @@ const statusBadgeClass = (status) =>
           <dd><span class="badge badge-approved">{{ company.approvalStatus }}</span></dd>
         </dl>
       </div>
-
-      <div class="form-card mb-5">
-        <h3 class="mb-3">
-          Post a New Drive
-        </h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="mb-0">Your Drives</h3>
+          <router-link to="/company/drives/new" class="btn btn-custom">Post a New Drive</router-link>
+        </div>
         
-        <div
-          v-if="formError"
-          class="alert alert-danger py-2"
-        >
-          {{ formError }}
-        </div>
-        <div
-          v-if="formSuccess"
-          class="alert alert-success py-2"
-        >
-          {{ formSuccess }}
-        </div>
-        <form @submit.prevent="handleCreate">
-          <div class="mb-3">
-            <label class="form-label">Job Title</label>
-            <input
-              v-model="form.jobTitle"
-              type="text"
-              class="form-control"
-              required
-            >
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Job Description</label>
-            <textarea
-              v-model="form.jobDesc"
-              class="form-control"
-              rows="3"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Eligibility Criteria</label>
-            <input
-              v-model="form.eligibility"
-              type="text"
-              class="form-control"
-              required
-            >
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Application Deadline</label>
-            <input
-              v-model="form.deadline"
-              type="date"
-              class="form-control"
-              :min="todayDate"
-              required
-            >
-          </div>
-          <button
-            type="submit"
-            class="btn btn-custom"
-            :disabled="isSubmitting"
-          >
-            Submit for Approval
-          </button>
-        </form>
-
-        <h3 class="mb-3">
-          Your Drives
-        </h3>
         <div
           v-if="drives.length === 0"
           class="text-muted"
         >
           You haven't posted any drives yet.
         </div>
-
 
         <template v-else>
           <input
@@ -267,8 +170,7 @@ const statusBadgeClass = (status) =>
             </table>
           </div>
         </div>
-        </template>
-      </div>
+      </template>
     </template>
 
     <div
@@ -317,7 +219,7 @@ const statusBadgeClass = (status) =>
 .search-input::placeholder {
   color: #64748b;
 }
-.form-card,
+.details-card,
 .admin-card {
   background: rgba(30, 41, 59, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -329,18 +231,6 @@ const statusBadgeClass = (status) =>
   overflow: hidden;
 }
 
-.form-control,
-textarea.form-control {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  padding: 0.85rem 1rem;
-  border-radius: 0.5rem;
-}
-.form-label {
-  color: #94a3b8;
-}
-
 .btn-custom {
   background-color: #38bdf8;
   color: #020617;
@@ -348,9 +238,12 @@ textarea.form-control {
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
+  text-decoration: none;
+  display: inline-block;
 }
 .btn-custom:hover:not(:disabled) {
   background-color: #34d399;
+  color: #020617;
 }
 .btn-custom:disabled {
   background-color: #64748b;

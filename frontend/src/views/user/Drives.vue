@@ -8,6 +8,8 @@ const error = ref("");
 const applyingId = ref(null);
 const applyError = ref("");
 const search = ref("");
+const profileComplete = ref(true);
+const missingProfileFields = ref([]);
 
 const filteredDrives = computed(() => {
   const query = search.value.trim().toLowerCase();
@@ -31,7 +33,20 @@ const fetchDrives = async () => {
   }
 };
 
-onMounted(fetchDrives);
+const fetchProfileStatus = async () => {
+  try {
+    const { data } = await axios.get("/api/profile");
+    profileComplete.value = data.profileComplete !== false;
+    missingProfileFields.value = data.missingProfileFields || [];
+  } catch (err) {
+    profileComplete.value = true;
+  }
+};
+
+onMounted(() => {
+  fetchDrives();
+  fetchProfileStatus();
+});
 
 const applyToDrive = async (driveId) => {
   applyError.value = "";
@@ -59,6 +74,13 @@ const applyToDrive = async (driveId) => {
     </div>
 
     <div v-else>
+      <div v-if="!profileComplete" class="alert alert-warning profile-notice py-3 mb-4">
+        <strong>Complete your profile to apply.</strong>
+        Missing: {{ missingProfileFields.join(", ") }}.
+        <router-link to="/profile" class="ms-1">Update your profile &rarr;</router-link>
+      </div>
+
+
       <input
         type="text"
         class="form-control search-input mb-4"
@@ -78,17 +100,31 @@ const applyToDrive = async (driveId) => {
             <p class="company-name mb-2">{{ drive.companyName }}</p>
             <p class="mb-1">{{ drive.jobDesc }}</p>
             <p class="mb-1"><strong>Eligibility:</strong> {{ drive.eligibility }}</p>
-            <p class="mb-0">
+            <p class="mb-1" v-if="drive.minCgpa !== null || drive.eligibleGraduationYear !== null">
+              <strong>Requirements:</strong>
+              <span v-if="drive.minCgpa !== null">Min CGPA {{ drive.minCgpa }}</span>
+              <span v-if="drive.minCgpa !== null && drive.eligibleGraduationYear !== null"> &middot; </span>
+              <span v-if="drive.eligibleGraduationYear !== null"
+                >{{ drive.eligibleGraduationYear }} batch only</span
+              >
+            </p>
+            <p class="mb-1">
               <strong>Deadline:</strong> {{ new Date(drive.deadline).toLocaleDateString() }}
+            </p>
+            <p v-if="profileComplete && !drive.isEligible && !drive.hasApplied" class="mb-0 ineligible-note">
+              {{ drive.ineligibleReason }}
             </p>
           </div>
           <button
             class="btn btn-custom"
-            :disabled="drive.hasApplied || drive.isExpired || applyingId === drive.id"
+            :disabled="drive.hasApplied || drive.isExpired || !profileComplete || !drive.isEligible || applyingId === drive.id"
+            :title="!profileComplete ? 'Complete your profile before applying' : drive.ineligibleReason || ''"
             @click="applyToDrive(drive.id)"
           >
             <span v-if="drive.hasApplied">Applied</span>
             <span v-else-if="drive.isExpired">Closed</span>
+            <span v-else-if="!profileComplete">Complete profile first</span>
+            <span v-else-if="!drive.isEligible">Ineligible</span>
             <span v-else-if="applyingId === drive.id">Applying...</span>
             <span v-else>Apply</span>
           </button>
@@ -99,6 +135,29 @@ const applyToDrive = async (driveId) => {
 </template>
 
 <style scoped>
+
+.profile-notice {
+  background-color: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  color: #facc15;
+}
+
+.profile-notice a {
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.profile-notice a:hover {
+  color: #34d399;
+}
+
+.ineligible-note {
+  color: #f87171;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .search-input {
   background-color: rgba(15, 23, 42, 0.6) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -107,6 +166,7 @@ const applyToDrive = async (driveId) => {
   border-radius: 0.5rem;
   max-width: 420px;
 }
+
 .search-input::placeholder {
   color: #64748b;
 }
