@@ -22,6 +22,8 @@ def _serialize_drive(drive):
         "jobTitle": drive.job_title,
         "jobDesc": drive.job_desc,
         "eligibility": drive.eligibility,
+        "minCgpa": drive.min_cgpa,
+        "eligibleGraduationYear": drive.eligible_graduation_year,
         "deadline": drive.drive_deadline.isoformat(),
         "status": drive.drive_status,
         "applicationCount": appl_count,
@@ -94,20 +96,51 @@ def create_drive():
         return jsonify({"message": "Your company must be approved before posting drives"}), 403
 
     data = request.get_json() or {}
-    required_fields = ["jobTitle", "jobDesc", "eligibility", "deadline"]
+    required_fields = [
+        "jobTitle",
+        "jobDesc",
+        "eligibility",
+        "deadline",
+        "minCgpa",
+        "eligibleGraduationYear",
+    ]
     if any(not data.get(field) for field in required_fields):
         return jsonify({"message": "All fields are required"}), 400
 
     try:
         deadline = datetime.fromisoformat(data.get("deadline"))
+        if deadline < datetime.utcnow():
+            return jsonify({"message": "The Application deadline is invalid."}), 400
     except ValueError:
         return jsonify({"message": "Invalid deadline format"}), 400
+
+    min_cgpa = data.get("minCgpa")
+    if min_cgpa not in (None, ""):
+        try:
+            min_cgpa = float(min_cgpa)
+        except TypeError, ValueError:
+            return jsonify({"message": "Minimum CGPA must be a number"}), 400
+        if not (0 <= min_cgpa <= 10):
+            return jsonify({"message": "Minimum CGPA must be between 0 and 10"}), 400
+    else:
+        min_cgpa = None
+
+    eligible_graduation_year = data.get("eligibleGraduationYear")
+    if eligible_graduation_year not in (None, ""):
+        try:
+            eligible_graduation_year = int(eligible_graduation_year)
+        except TypeError, ValueError:
+            return jsonify({"message": "Eligible graduation year must be a number"}), 400
+    else:
+        eligible_graduation_year = None
 
     drive = PlacementDrives(
         company_id=profile.company_id,
         job_title=data.get("jobTitle"),
         job_desc=data.get("jobDesc"),
         eligibility=data.get("eligibility"),
+        min_cgpa=min_cgpa,
+        eligible_graduation_year=eligible_graduation_year,
         drive_deadline=deadline,
         drive_status="Pending",
     )

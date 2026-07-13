@@ -20,6 +20,7 @@ def _serialize_user(user):
 
     if user.role == "student":
         profile = StudentProfile.query.filter_by(user_id=user.user_id).first()
+        missing_fields = _missing_profile_fields(user.user_id)
         data.update(
             {
                 "degree": profile.degree if profile else None,
@@ -28,23 +29,63 @@ def _serialize_user(user):
                 "resumeUrl": profile.resume_url if profile else None,
                 "skills": profile.skills if profile else None,
                 "bio": profile.bio if profile else None,
+                "profileComplete": not missing_fields,
+                "missingProfileFields": missing_fields,
             }
         )
 
     return data
 
 
-def _serialize_drive(drive, applied_drive_ids):
+REQUIRED_PROFILE_FIELDS = (
+    ("degree", "Degree"),
+    ("graduation_year", "Graduation Year"),
+    ("cgpa", "CGPA"),
+    ("resume_url", "Resume URL"),
+)
+
+
+def _missing_profile_fields(user_id):
+    profile = StudentProfile.query.filter_by(user_id=user_id).first()
+    if not profile:
+        return [label for _, label in REQUIRED_PROFILE_FIELDS]
+    return [
+        label for field, label in REQUIRED_PROFILE_FIELDS if getattr(profile, field) in (None, "")
+    ]
+
+
+def ineligibility_check(drive, profile):
+    if drive.min_cgpa is not None:
+        if not profile or profile.cgpa is None:
+            return f"Requires a minimum CGPA of {drive.min_cgpa}"
+        if profile.cgpa < drive.min_cgpa:
+            return f"Your CGPA ({profile.cgpa}) is below the required {drive.min_cgpa}"
+
+    if drive.eligible_graduation_year is not None:
+        if not profile or profile.graduation_year is None:
+            return f"Open only to the {drive.eligible_graduation_year} graduating batch"
+        if profile.graduation_year != drive.eligible_graduation_year:
+            return f"Open only to the {drive.eligible_graduation_year} graduating batch"
+
+    return None
+
+
+def _serialize_drive(drive, applied_drive_ids, profile):
     company = CompanyProfile.query.get(drive.company_id)
+    ineligible_reason = ineligibility_check(drive, profile)
     return {
         "id": drive.drive_id,
         "jobTitle": drive.job_title,
         "jobDesc": drive.job_desc,
         "eligibility": drive.eligibility,
+        "minCgpa": drive.min_cgpa,
+        "eligibleGraduationYear": drive.eligible_graduation_year,
         "deadline": drive.drive_deadline.isoformat(),
         "companyName": company.company_name if company else "Unknown",
         "hasApplied": drive.drive_id in applied_drive_ids,
         "isExpired": drive.drive_deadline < datetime.utcnow(),
+        "isEligible": ineligible_reason is None,
+        "ineligibleReason": ineligible_reason,
     }
 
 
@@ -157,8 +198,9 @@ def list_drives():
     applied_drive_ids = {
         appl.drive_id for appl in Applications.query.filter_by(student_id=user_id).all()
     }
+    profile = StudentProfile.query.filter_by(user_id=user_id).first()
 
-    return jsonify([_serialize_drive(drive, applied_drive_ids) for drive in drives]), 200
+    return jsonify([_serialize_drive(drive, applied_drive_ids, profile) for drive in drives]), 200
 
 
 @bp.route("/drives/<int:drive_id>/apply", methods=["POST"])
@@ -172,6 +214,24 @@ def apply_to_drive(drive_id):
 
     if drive.drive_deadline < datetime.utcnow():
         return jsonify({"message": "The application deadline has passed"}), 400
+
+    missing_fields = _missing_profile_fields(user_id)
+    if missing_fields:
+        return jsonify(
+            {
+                "message": (
+                    "Please complete your profile before applying. Missing: "
+                    + ", ".join(missing_fields)
+                )
+            }
+        ), 400
+
+    profile = StudentProfile.query.filter_by(user_id=user_id).first()
+    ineligible_reason = ineligibility_check(drive, profile)
+    if ineligible_reason:
+        return jsonify(
+            {"message": f"You are not eligible for this drive: {ineligible_reason}"}
+        ), 403
 
     if Applications.query.filter_by(student_id=user_id, drive_id=drive_id).first():
         return jsonify({"message": "You have already applied to this drive"}), 409

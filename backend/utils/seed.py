@@ -196,6 +196,8 @@ def seed_large_dataset():
         # Pick from our list of approved company IDs
         comp_id = random.choice(companies_list)
         title = random.choice(job_titles)
+        min_cgpa = random.choice([None, 6.5, 7.0, 7.5, 8.0])
+        grad_year = random.choice([2028, 2027, 2026, 2029])
 
         drive = PlacementDrives(
             company_id=comp_id,
@@ -206,6 +208,8 @@ def seed_large_dataset():
             eligibility="All Engineering/Technology branches eligible. \
                          Minimum aggregate CGPA >= 7.5. \
                          Strong problem-solving foundations required.",
+            min_cgpa=min_cgpa,
+            eligible_graduation_year=grad_year,
             drive_deadline=datetime.datetime.now()
             + datetime.timedelta(days=random.randint(5, 30)),
             drive_status=random.choice(drive_statuses),
@@ -312,8 +316,6 @@ def seed_large_dataset():
 
 
 def clear_seeded_data():
-    """Wipe previously-seeded demo data, but never touch real accounts
-    like the admin user. Deletes in FK-dependency order."""
     Applications.query.delete()
     PlacementDrives.query.delete()
     CompanyProfile.query.delete()

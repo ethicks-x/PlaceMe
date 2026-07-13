@@ -74,6 +74,8 @@ class PlacementDrives(db.Model):
     job_title = db.Column(db.String(100), nullable=False)
     job_desc = db.Column(db.String(300), nullable=False)
     eligibility = db.Column(db.String(150), nullable=False)
+    min_cgpa = db.Column(db.Float, nullable=True)
+    eligible_graduation_year = db.Column(db.Integer, nullable=True)
     drive_deadline = db.Column(db.DateTime, nullable=False)
     drive_status = db.Column(
         db.Enum("Pending", "Approved", "Rejected", "Closed", name="drive_status"),

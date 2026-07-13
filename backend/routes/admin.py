@@ -66,6 +66,8 @@ def _serialize_drive(drive):
         "jobTitle": drive.job_title,
         "jobDesc": drive.job_desc,
         "eligibility": drive.eligibility,
+        "minCgpa": drive.min_cgpa,
+        "eligibleGraduationYear": drive.eligible_graduation_year,
         "deadline": drive.drive_deadline.isoformat(),
         "status": drive.drive_status,
         "companyName": company.company_name if company else "Unknown",
