@@ -77,7 +77,7 @@
         fill="#f8fafc"
         letter-spacing="-1"
       >
-        Place 
+        Place
         <tspan fill="url(#brandGradient)">Me</tspan>
       </text>
 

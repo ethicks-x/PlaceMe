@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from "axios";
-import { router } from "../../router"
+import { router } from "../../router";
 
 const status = ref(null);
 const isLoading = ref(true);
@@ -34,8 +34,8 @@ onMounted(async () => {
         <h1 class="mb-3">Application Under Review</h1>
         <p class="text-muted">
           Thanks for registering <strong>{{ status.companyName }}</strong
-          >. An admin will review your details shortly. You'll be able to post placement drives
-          once approved.
+          >. An admin will review your details shortly. You'll be able to post placement drives once
+          approved.
         </p>
       </template>
 
@@ -68,4 +68,3 @@ onMounted(async () => {
   color: #f87171;
 }
 </style>
-

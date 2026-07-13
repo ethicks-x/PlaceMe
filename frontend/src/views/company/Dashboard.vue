@@ -14,13 +14,12 @@ const error = ref("");
 const search = ref("");
 
 const filteredDrives = computed(() => {
-    const query = search.value.trim().toLowerCase();
-    if (!query) return drives.value;
-    return drives.value.filter(
-        (drive) => 
-            drive.jobTitle.toLowerCase().includes(query) ||
-            drive.status.toLowerCase().includes(query),
-    );
+  const query = search.value.trim().toLowerCase();
+  if (!query) return drives.value;
+  return drives.value.filter(
+    (drive) =>
+      drive.jobTitle.toLowerCase().includes(query) || drive.status.toLowerCase().includes(query),
+  );
 });
 
 const fetchDrives = async () => {
@@ -61,75 +60,52 @@ const statusBadgeClass = (status) =>
 
 <template>
   <b-container class="py-5">
-    <h1 class="mb-4">
-      Company Dashboard
-    </h1>
+    <h1 class="mb-4">Company Dashboard</h1>
 
-    <div
-      v-if="isLoading"
-      class="text-muted"
-    >
-      Loading...
-    </div>
-    <div
-      v-else-if="error"
-      class="alert alert-danger"
-    >
+    <div v-if="isLoading" class="text-muted">Loading...</div>
+    <div v-else-if="error" class="alert alert-danger">
       {{ error }}
     </div>
     <template v-else-if="company">
       <div class="details-card mb-5">
-        <h3 class="mb-3">
-          Company Details
-        </h3>
+        <h3 class="mb-3">Company Details</h3>
         <dl class="details-grid mb-0">
           <dt>Company Name</dt>
           <dd>{{ company.companyName }}</dd>
           <dt>Website</dt>
           <dd>
-            <a
-              :href="company.website"
-              target="_blank"
-              rel="noopener"
-              class="switch-link"
-            >{{
+            <a :href="company.website" target="_blank" rel="noopener" class="switch-link">{{
               company.website
             }}</a>
           </dd>
           <dt>HR Contact</dt>
           <dd>{{ company.hrContact }}</dd>
           <dt>Approval Status</dt>
-          <dd><span class="badge badge-approved">{{ company.approvalStatus }}</span></dd>
+          <dd>
+            <span class="badge badge-approved">{{ company.approvalStatus }}</span>
+          </dd>
         </dl>
       </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="mb-0">Your Drives</h3>
-          <router-link to="/company/drives/new" class="btn btn-custom">Post a New Drive</router-link>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Your Drives</h3>
+        <router-link to="/company/drives/new" class="btn btn-custom">Post a New Drive</router-link>
+      </div>
+
+      <div v-if="drives.length === 0" class="text-muted">You haven't posted any drives yet.</div>
+
+      <template v-else>
+        <input
+          type="text"
+          class="form-control search-input mb-3"
+          placeholder="Search by role or status"
+          v-model="search"
+        />
+
+        <div v-if="filteredDrives.length === 0" class="text-muted">
+          No drives match your search.
         </div>
-        
-        <div
-          v-if="drives.length === 0"
-          class="text-muted"
-        >
-          You haven't posted any drives yet.
-        </div>
 
-        <template v-else>
-          <input
-            type="text"
-            class="form-control search-input mb-3"
-            placeholder="Search by role or status"
-            v-model="search"
-          />
-
-          <div v-if="filteredDrives.length === 0" class="text-muted">
-            No drives match your search.
-          </div>
-
-        <div
-          v-else
-          class="admin-card"
-        >
+        <div v-else class="admin-card">
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 admin-table">
               <thead>
@@ -142,26 +118,17 @@ const statusBadgeClass = (status) =>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="drive in filteredDrives"
-                  :key="drive.id"
-                >
+                <tr v-for="drive in filteredDrives" :key="drive.id">
                   <td>{{ drive.jobTitle }}</td>
                   <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
                   <td>
-                    <span
-                      class="badge"
-                      :class="statusBadgeClass(drive.status)"
-                    >{{
+                    <span class="badge" :class="statusBadgeClass(drive.status)">{{
                       drive.status
                     }}</span>
                   </td>
                   <td>{{ drive.applicantCount }}</td>
                   <td>
-                    <router-link
-                      :to="`/company/drives/${drive.id}/applicants`"
-                      class="switch-link"
-                    >
+                    <router-link :to="`/company/drives/${drive.id}/applicants`" class="switch-link">
                       View Applicants
                     </router-link>
                   </td>
@@ -173,10 +140,7 @@ const statusBadgeClass = (status) =>
       </template>
     </template>
 
-    <div
-      v-else
-      class="admin-card"
-    >
+    <div v-else class="admin-card">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 admin-table">
           <thead>
@@ -187,17 +151,13 @@ const statusBadgeClass = (status) =>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="drive in drives"
-              :key="drive.id"
-            >
+            <tr v-for="drive in drives" :key="drive.id">
               <td>{{ drive.jobTitle }}</td>
               <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
               <td>
-                <span
-                  class="badge"
-                  :class="statusBadgeClass(drive.status)"
-                >{{ drive.status }}</span>
+                <span class="badge" :class="statusBadgeClass(drive.status)">{{
+                  drive.status
+                }}</span>
               </td>
             </tr>
           </tbody>

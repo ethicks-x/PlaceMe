@@ -97,9 +97,13 @@ const statusBadgeClass = (status) =>
                   {{ company.companyName }}
                 </button>
                 <div>
-                  <a :href="company.website" target="_blank" rel="noopener" class="switch-link small">{{
-                    company.website
-                  }}</a>
+                  <a
+                    :href="company.website"
+                    target="_blank"
+                    rel="noopener"
+                    class="switch-link small"
+                    >{{ company.website }}</a
+                  >
                 </div>
               </td>
               <td>
@@ -331,4 +335,3 @@ const statusBadgeClass = (status) =>
   background-color: rgba(148, 163, 184, 0.35);
 }
 </style>
-

@@ -28,7 +28,9 @@ const toggleActive = async (student) => {
   error.value = "";
   actingId.value = student.id;
   try {
-    await axios.post(`/api/admin/students/${student.id}/${student.isActive ? "deactivate" : "activate"}`);
+    await axios.post(
+      `/api/admin/students/${student.id}/${student.isActive ? "deactivate" : "activate"}`,
+    );
     await fetchStudents();
   } catch (err) {
     error.value = err.response?.data?.message || "Action failed.";
@@ -174,4 +176,3 @@ const toggleActive = async (student) => {
   background-color: rgba(148, 163, 184, 0.35);
 }
 </style>
-

@@ -1,15 +1,15 @@
 <script setup>
-    import { computed } from 'vue';
-    import { useAuth } from '../store/auth';
+import { computed } from "vue";
+import { useAuth } from "../store/auth";
 
-    const props = defineProps({
-        role: {
-            type: String,
-            default: 'guest'
-        }
-    })
+const props = defineProps({
+  role: {
+    type: String,
+    default: "guest",
+  },
+});
 
-    const { logout } = useAuth();
+const { logout } = useAuth();
 </script>
 
 <template>
@@ -23,7 +23,7 @@
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav class="nav-links">
         <template v-if="role === 'student'">
-        <b-nav-item to="/dashboard">Dashboard</b-nav-item>
+          <b-nav-item to="/dashboard">Dashboard</b-nav-item>
           <b-nav-item to="/drives">Drives</b-nav-item>
           <b-nav-item to="/applications">My Applications</b-nav-item>
         </template>
@@ -35,8 +35,8 @@
           <b-nav-item to="/admin/drives">Drives</b-nav-item>
         </template>
         <template v-else>
-            <b-nav-item to="/">Home</b-nav-item>
-            <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/">Home</b-nav-item>
+          <b-nav-item to="/about">About</b-nav-item>
         </template>
       </b-navbar-nav>
 
@@ -44,18 +44,25 @@
         <b-nav-form class="d-flex align-items-center" v-if="role !== 'guest'">
           <b-form-input size="sm" class="me-2 search-input" placeholder="Search"></b-form-input>
           <b-button size="sm" variant="outline-light" class="search-btn" type="submit">
-              <i-bi-search />
+            <i-bi-search />
           </b-button>
         </b-nav-form>
 
         <b-nav-item-dropdown right class="custom-dropdown" v-if="props.role !== 'guest'">
           <template #button-content>
-            <i-bi-person-circle class="me-2"/>
+            <i-bi-person-circle class="me-2" />
           </template>
           <b-dropdown-item to="/profile">Profile</b-dropdown-item>
           <b-dropdown-item href="/" @click.prevent="logout">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
-        <b-button size="md" variant="outline-light" class="login-btn" href="/login" v-if="props.role === 'guest'">Login</b-button>
+        <b-button
+          size="md"
+          variant="outline-light"
+          class="login-btn"
+          href="/login"
+          v-if="props.role === 'guest'"
+          >Login</b-button
+        >
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -75,76 +82,77 @@
 
 /* Logo Styling */
 .navbar-brand-custom {
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
   font-weight: 700;
   font-size: 2.7rem;
   letter-spacing: -0.5px;
 }
 .brand-accent {
-  color: #38BDF8;
+  color: #38bdf8;
 }
 
 /* Nav links colors */
 :deep(.nav-link) {
-  color: #94A3B8 !important;
+  color: #94a3b8 !important;
   font-weight: 500;
   font-size: 1.1rem;
   padding: 0 1rem;
   transition: color 0.2s ease;
 }
-:deep(.nav-link:hover), :deep(.nav-link:focus) {
-  color: #38BDF8 !important;
+:deep(.nav-link:hover),
+:deep(.nav-link:focus) {
+  color: #38bdf8 !important;
 }
 
 /* Search Input */
 .search-input {
-    font-size: 1rem;
-  background-color: #0F172A !important;
+  font-size: 1rem;
+  background-color: #0f172a !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
 }
 .search-input::placeholder {
-    font-size: 1rem;
-  color: #64748B;
+  font-size: 1rem;
+  color: #64748b;
 }
 
 /* Login Button */
 .login-btn {
-    border-color: #38BDF8 !important;
-    color: #38BDF8 !important;
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
 }
 
 .login-btn:hover {
-    background-color: #38BDF8 !important;
-    color: #020617 !important;
+  background-color: #38bdf8 !important;
+  color: #020617 !important;
 }
 
 /* Search Button */
 .search-btn {
   font-size: 0.9rem;
-  border-color: #38BDF8 !important;
-  color: #38BDF8 !important;
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
 }
 .search-btn:hover {
-  background-color: #38BDF8 !important;
+  background-color: #38bdf8 !important;
   color: #020617 !important;
 }
 
 /* Dropdown Menu alignment modifications */
-:deep(.custom-dropdown){
-    display: flex;
-    align-items: center;
+:deep(.custom-dropdown) {
+  display: flex;
+  align-items: center;
 }
 :deep(.dropdown-menu) {
-  background-color: #0F172A !important;
+  background-color: #0f172a !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 :deep(.dropdown-item) {
-    font-size: 1.1rem;
-  color: #94A3B8 !important;
+  font-size: 1.1rem;
+  color: #94a3b8 !important;
 }
 :deep(.dropdown-item:hover) {
   background-color: rgba(56, 189, 248, 0.1) !important;
-  color: #38BDF8 !important;
+  color: #38bdf8 !important;
 }
 </style>

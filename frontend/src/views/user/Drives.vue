@@ -80,7 +80,6 @@ const applyToDrive = async (driveId) => {
         <router-link to="/profile" class="ms-1">Update your profile &rarr;</router-link>
       </div>
 
-
       <input
         type="text"
         class="form-control search-input mb-4"
@@ -89,9 +88,7 @@ const applyToDrive = async (driveId) => {
       />
       <div v-if="applyError" class="alert alert-danger py-2">{{ applyError }}</div>
 
-      <div v-if="filteredDrives.length === 0" class="text-muted">
-        No drives match your search.
-      </div>
+      <div v-if="filteredDrives.length === 0" class="text-muted">No drives match your search.</div>
 
       <div v-for="drive in filteredDrives" :key="drive.id" class="drive-card mb-3">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
@@ -103,7 +100,9 @@ const applyToDrive = async (driveId) => {
             <p class="mb-1" v-if="drive.minCgpa !== null || drive.eligibleGraduationYear !== null">
               <strong>Requirements:</strong>
               <span v-if="drive.minCgpa !== null">Min CGPA {{ drive.minCgpa }}</span>
-              <span v-if="drive.minCgpa !== null && drive.eligibleGraduationYear !== null"> &middot; </span>
+              <span v-if="drive.minCgpa !== null && drive.eligibleGraduationYear !== null">
+                &middot;
+              </span>
               <span v-if="drive.eligibleGraduationYear !== null"
                 >{{ drive.eligibleGraduationYear }} batch only</span
               >
@@ -111,14 +110,27 @@ const applyToDrive = async (driveId) => {
             <p class="mb-1">
               <strong>Deadline:</strong> {{ new Date(drive.deadline).toLocaleDateString() }}
             </p>
-            <p v-if="profileComplete && !drive.isEligible && !drive.hasApplied" class="mb-0 ineligible-note">
+            <p
+              v-if="profileComplete && !drive.isEligible && !drive.hasApplied"
+              class="mb-0 ineligible-note"
+            >
               {{ drive.ineligibleReason }}
             </p>
           </div>
           <button
             class="btn btn-custom"
-            :disabled="drive.hasApplied || drive.isExpired || !profileComplete || !drive.isEligible || applyingId === drive.id"
-            :title="!profileComplete ? 'Complete your profile before applying' : drive.ineligibleReason || ''"
+            :disabled="
+              drive.hasApplied ||
+              drive.isExpired ||
+              !profileComplete ||
+              !drive.isEligible ||
+              applyingId === drive.id
+            "
+            :title="
+              !profileComplete
+                ? 'Complete your profile before applying'
+                : drive.ineligibleReason || ''
+            "
             @click="applyToDrive(drive.id)"
           >
             <span v-if="drive.hasApplied">Applied</span>
@@ -135,7 +147,6 @@ const applyToDrive = async (driveId) => {
 </template>
 
 <style scoped>
-
 .profile-notice {
   background-color: rgba(250, 204, 21, 0.12);
   border: 1px solid rgba(250, 204, 21, 0.35);
@@ -199,4 +210,3 @@ const applyToDrive = async (driveId) => {
   color: #94a3b8;
 }
 </style>
-

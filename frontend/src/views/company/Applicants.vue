@@ -15,13 +15,14 @@ const actionError = ref("");
 const search = ref("");
 
 const filteredApplicants = computed(() => {
-    const query = search.value.trim().toLowerCase();
-    if (!query) return applicants.value;
-    return applicants.value.filter((applicant) => 
-        applicant.studentName.toLowerCase().includes(query) ||
-        applicant.studentEmail.toLowerCase().includes(query) ||
-        applicant.status.toLowerCase().includes(query),
-    );
+  const query = search.value.trim().toLowerCase();
+  if (!query) return applicants.value;
+  return applicants.value.filter(
+    (applicant) =>
+      applicant.studentName.toLowerCase().includes(query) ||
+      applicant.studentEmail.toLowerCase().includes(query) ||
+      applicant.status.toLowerCase().includes(query),
+  );
 });
 
 const selectedApplicant = ref(null);
@@ -94,74 +95,76 @@ const statusBadgeClass = (status) =>
         <div v-if="filteredApplicants.length === 0" class="text-muted">
           No applicants match your search.
         </div>
-      <div v-else class="admin-card">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0 admin-table">
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Contact</th>
-                <th>Applied On</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="applicant in filteredApplicants" :key="applicant.id">
-                <td>
-                  <button class="btn-link-name" @click="viewApplicant(applicant)">
-                    {{ applicant.studentName }}
-                  </button>
-                </td>
-                <td>
-                  <div>{{ applicant.studentEmail }}</div>
-                  <div class="text-muted small">{{ applicant.studentMobile }}</div>
-                </td>
-                <td>{{ new Date(applicant.appliedDate).toLocaleDateString() }}</td>
-                <td>
-                  <span class="badge" :class="statusBadgeClass(applicant.status)">{{
-                    applicant.status
-                  }}</span>
-                </td>
-                <td>
-                  <div class="d-flex gap-2 flex-wrap">
-                    <button
-                      v-if="applicant.status !== 'shortlisted'"
-                      class="btn btn-sm btn-shortlist"
-                      :disabled="actingId === applicant.id"
-                      @click="updateStatus(applicant.id, 'shortlisted')"
-                    >
-                      Shortlist
+        <div v-else class="admin-card">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 admin-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Contact</th>
+                  <th>Applied On</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="applicant in filteredApplicants" :key="applicant.id">
+                  <td>
+                    <button class="btn-link-name" @click="viewApplicant(applicant)">
+                      {{ applicant.studentName }}
                     </button>
-                    <button
-                      v-if="applicant.status !== 'selected'"
-                      class="btn btn-sm btn-select"
-                      :disabled="actingId === applicant.id"
-                      @click="updateStatus(applicant.id, 'selected')"
-                    >
-                      Select
-                    </button>
-                    <button
-                      v-if="applicant.status !== 'rejected'"
-                      class="btn btn-sm btn-reject"
-                      :disabled="actingId === applicant.id"
-                      @click="updateStatus(applicant.id, 'rejected')"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td>
+                    <div>{{ applicant.studentEmail }}</div>
+                    <div class="text-muted small">{{ applicant.studentMobile }}</div>
+                  </td>
+                  <td>{{ new Date(applicant.appliedDate).toLocaleDateString() }}</td>
+                  <td>
+                    <span class="badge" :class="statusBadgeClass(applicant.status)">{{
+                      applicant.status
+                    }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2 flex-wrap">
+                      <button
+                        v-if="applicant.status !== 'shortlisted'"
+                        class="btn btn-sm btn-shortlist"
+                        :disabled="actingId === applicant.id"
+                        @click="updateStatus(applicant.id, 'shortlisted')"
+                      >
+                        Shortlist
+                      </button>
+                      <button
+                        v-if="applicant.status !== 'selected'"
+                        class="btn btn-sm btn-select"
+                        :disabled="actingId === applicant.id"
+                        @click="updateStatus(applicant.id, 'selected')"
+                      >
+                        Select
+                      </button>
+                      <button
+                        v-if="applicant.status !== 'rejected'"
+                        class="btn btn-sm btn-reject"
+                        :disabled="actingId === applicant.id"
+                        @click="updateStatus(applicant.id, 'rejected')"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       </template>
     </template>
     <b-modal v-model="showModal" title="Applicant Details" no-footer>
       <div v-if="selectedApplicant" class="applicant-detail">
         <h3 class="mb-1">{{ selectedApplicant.studentName }}</h3>
-        <p class="text-muted mb-3">{{ selectedApplicant.studentEmail }} &middot; {{ selectedApplicant.studentMobile }}</p>
+        <p class="text-muted mb-3">
+          {{ selectedApplicant.studentEmail }} &middot; {{ selectedApplicant.studentMobile }}
+        </p>
 
         <dl class="detail-grid">
           <dt>Degree / Branch</dt>
@@ -339,4 +342,3 @@ const statusBadgeClass = (status) =>
   background-color: rgba(248, 113, 113, 0.35);
 }
 </style>
-

@@ -74,7 +74,9 @@ const handleCreate = async () => {
   <b-container class="py-5" style="max-width: 700px">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0">Post a New Drive</h1>
-      <router-link to="/company/dashboard" class="switch-link">&larr; Back to Dashboard</router-link>
+      <router-link to="/company/dashboard" class="switch-link"
+        >&larr; Back to Dashboard</router-link
+      >
     </div>
 
     <div v-if="isLoading" class="text-muted">Loading...</div>
@@ -82,9 +84,14 @@ const handleCreate = async () => {
 
     <div v-else class="form-card">
       <div v-if="formError" class="alert alert-danger py-2">{{ formError }}</div>
-      <div v-if="formSuccess" class="alert alert-success py-2 d-flex justify-content-between align-items-center">
+      <div
+        v-if="formSuccess"
+        class="alert alert-success py-2 d-flex justify-content-between align-items-center"
+      >
         <span>{{ formSuccess }}</span>
-        <router-link to="/company/dashboard" class="switch-link">View your drives &rarr;</router-link>
+        <router-link to="/company/dashboard" class="switch-link"
+          >View your drives &rarr;</router-link
+        >
       </div>
 
       <form @submit.prevent="handleCreate">
@@ -186,4 +193,3 @@ textarea.form-control {
   color: #94a3b8;
 }
 </style>
-

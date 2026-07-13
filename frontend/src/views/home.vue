@@ -6,7 +6,9 @@
     <b-container class="hero-section text-center">
       <b-row align-v="center">
         <b-col md="6" class="text-md-start">
-          <h1 class="hero-title">Companies are just <span class="highlight">One-Click Away.</span></h1>
+          <h1 class="hero-title">
+            Companies are just <span class="highlight">One-Click Away.</span>
+          </h1>
           <p class="hero-subtitle">
             Find your favorite jobs at your ease. No hussle, place where skills speak more.
           </p>
@@ -32,7 +34,8 @@
             </div>
             <h3>Real-time Availability</h3>
             <p>
-              Real-time management of the job postings with admin invigilation makes it convenient to get the job you need.
+              Real-time management of the job postings with admin invigilation makes it convenient
+              to get the job you need.
             </p>
           </div>
         </b-col>
@@ -43,7 +46,8 @@
             </div>
             <h3>Simple Connect</h3>
             <p>
-              Simplified connection between the company and the student, makes it perfect for a workflow.
+              Simplified connection between the company and the student, makes it perfect for a
+              workflow.
             </p>
           </div>
         </b-col>
@@ -82,10 +86,10 @@
 </template>
 
 <style scoped>
-@import url('bootstrap-icons/font/bootstrap-icons.css');
+@import url("bootstrap-icons/font/bootstrap-icons.css");
 
 .landing-page-wrapper {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background: transparent;
   color: var(--text-color);
   overflow-x: hidden;

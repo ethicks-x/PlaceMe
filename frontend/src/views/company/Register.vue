@@ -126,9 +126,7 @@ const handleSubmit = async () => {
           />
         </div>
 
-        <button type="submit" class="btn btn-custom" :disabled="isLoading">
-          Register Company
-        </button>
+        <button type="submit" class="btn btn-custom" :disabled="isLoading">Register Company</button>
       </form>
 
       <p class="text-center mt-3 mb-0">
@@ -200,4 +198,3 @@ h2 {
   text-align: center;
 }
 </style>
-

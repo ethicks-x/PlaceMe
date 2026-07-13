@@ -150,4 +150,3 @@ onMounted(async () => {
   color: #34d399;
 }
 </style>
-

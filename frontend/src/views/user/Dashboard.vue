@@ -78,4 +78,3 @@ onMounted(async () => {
   margin-top: 0.5rem;
 }
 </style>
-

@@ -102,7 +102,9 @@ const statusBadgeClass = (status) =>
               <td>{{ drive.companyName }}</td>
               <td>{{ new Date(drive.deadline).toLocaleDateString() }}</td>
               <td>
-                <span class="badge" :class="statusBadgeClass(drive.status)">{{ drive.status }}</span>
+                <span class="badge" :class="statusBadgeClass(drive.status)">{{
+                  drive.status
+                }}</span>
               </td>
               <td>
                 <div class="d-flex gap-2 flex-wrap">
@@ -129,7 +131,7 @@ const statusBadgeClass = (status) =>
         </table>
       </div>
     </div>
-    
+
     <b-modal v-model="showModal" title="Drive Details" no-footer>
       <div v-if="selectedDrive" class="drive-detail">
         <h3 class="mb-1">{{ selectedDrive.jobTitle }}</h3>
@@ -304,4 +306,3 @@ const statusBadgeClass = (status) =>
   background-color: rgba(248, 113, 113, 0.35);
 }
 </style>
-

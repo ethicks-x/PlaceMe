@@ -61,31 +61,30 @@ const statusClass = (status) =>
       </div>
 
       <div v-else class="applications-card">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0 applications-table">
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Role</th>
-              <th>Applied On</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="appl in filteredApplications" :key="appl.id">
-              <td>{{ appl.companyName }}</td>
-              <td>{{ appl.jobTitle }}</td>
-              <td>{{ new Date(appl.appliedDate).toLocaleDateString() }}</td>
-              <td>
-                <span class="badge" :class="statusClass(appl.status)">{{ appl.status }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 applications-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Applied On</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="appl in filteredApplications" :key="appl.id">
+                <td>{{ appl.companyName }}</td>
+                <td>{{ appl.jobTitle }}</td>
+                <td>{{ new Date(appl.appliedDate).toLocaleDateString() }}</td>
+                <td>
+                  <span class="badge" :class="statusClass(appl.status)">{{ appl.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </template>
-
   </b-container>
 </template>
 
@@ -102,20 +101,20 @@ const statusClass = (status) =>
   color: #64748b;
 }
 .applications-card {
-    background: rgba(30, 41, 59, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    overflow: hidden;
+  background: rgba(30, 41, 59, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
 }
 .applications-table {
-    --bs-table-bg: transparent;
-    --bs-table-color: #f8fafc;
-    --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
-    --bs-table-hover-color: #f8fafc;
-    --bs-table-border-color: rgba(255,255,255,0.08);
+  --bs-table-bg: transparent;
+  --bs-table-color: #f8fafc;
+  --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
+  --bs-table-hover-color: #f8fafc;
+  --bs-table-border-color: rgba(255, 255, 255, 0.08);
 }
 .applications-table thead th {
-    background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.6);
   color: #94a3b8;
   font-weight: 600;
   text-transform: uppercase;
@@ -125,10 +124,10 @@ const statusClass = (status) =>
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .applications-table tbody td {
-    padding: 1rem 1.5rem;
+  padding: 1rem 1.5rem;
 }
 .applications-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 .badge {
   text-transform: capitalize;
@@ -152,4 +151,3 @@ const statusClass = (status) =>
   color: #f87171;
 }
 </style>
-
