@@ -1,59 +1,59 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import axios from "axios";
-import { useAuth } from "../../store/auth";
+import { computed, onMounted, ref } from 'vue'
+import axios from 'axios'
+import { useAuth } from '../../store/auth'
 
-const { authState } = useAuth();
+const { authState } = useAuth()
 
-const isStudent = computed(() => authState.user?.role === "student");
+const isStudent = computed(() => authState.user?.role === 'student')
 
 const form = ref({
-  fullName: "",
-  mobile: "",
-  degree: "",
-  graduationYear: "",
-  cgpa: "",
-  resumeUrl: "",
-  skills: "",
-  bio: "",
-});
-const isLoading = ref(true);
-const isSaving = ref(false);
-const error = ref("");
-const successMessage = ref("");
+  fullName: '',
+  mobile: '',
+  degree: '',
+  graduationYear: '',
+  cgpa: '',
+  resumeUrl: '',
+  skills: '',
+  bio: '',
+})
+const isLoading = ref(true)
+const isSaving = ref(false)
+const error = ref('')
+const successMessage = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get("/api/profile");
-    form.value.fullName = data.fullName || "";
-    form.value.mobile = data.mobile || "";
-    form.value.degree = data.degree || "";
-    form.value.graduationYear = data.graduationYear || "";
-    form.value.cgpa = data.cgpa ?? "";
-    form.value.resumeUrl = data.resumeUrl || "";
-    form.value.skills = data.skills || "";
-    form.value.bio = data.bio || "";
+    const { data } = await axios.get('/api/profile')
+    form.value.fullName = data.fullName || ''
+    form.value.mobile = data.mobile || ''
+    form.value.degree = data.degree || ''
+    form.value.graduationYear = data.graduationYear || ''
+    form.value.cgpa = data.cgpa ?? ''
+    form.value.resumeUrl = data.resumeUrl || ''
+    form.value.skills = data.skills || ''
+    form.value.bio = data.bio || ''
   } catch (err) {
-    error.value = "Could not load your profile.";
+    error.value = 'Could not load your profile.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 
 const handleSave = async () => {
-  error.value = "";
-  successMessage.value = "";
-  isSaving.value = true;
+  error.value = ''
+  successMessage.value = ''
+  isSaving.value = true
 
   try {
-    await axios.put("/api/profile", form.value);
-    successMessage.value = "Profile updated successfully.";
+    await axios.put('/api/profile', form.value)
+    successMessage.value = 'Profile updated successfully.'
   } catch (err) {
-    error.value = err.response?.data?.message || "Failed to update profile.";
+    error.value = err.response?.data?.message || 'Failed to update profile.'
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
-};
+}
 </script>
 
 <template>

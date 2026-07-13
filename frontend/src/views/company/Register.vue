@@ -1,31 +1,31 @@
 <script setup>
-import { ref } from "vue";
-import { useAuth } from "../../store/auth";
+import { ref } from 'vue'
+import { useAuth } from '../../store/auth'
 
-const { registerCompany } = useAuth();
+const { registerCompany } = useAuth()
 
 const form = ref({
-  companyName: "",
-  website: "",
-  hrContact: "",
-  hrMobile: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-});
+  companyName: '',
+  website: '',
+  hrContact: '',
+  hrMobile: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
 
-const isLoading = ref(false);
-const error = ref("");
+const isLoading = ref(false)
+const error = ref('')
 
 const handleSubmit = async () => {
-  error.value = "";
+  error.value = ''
 
   if (form.value.password !== form.value.confirmPassword) {
-    error.value = "Passwords do not match.";
-    return;
+    error.value = 'Passwords do not match.'
+    return
   }
 
-  isLoading.value = true;
+  isLoading.value = true
   try {
     await registerCompany({
       companyName: form.value.companyName,
@@ -34,13 +34,13 @@ const handleSubmit = async () => {
       hrMobile: form.value.hrMobile,
       email: form.value.email,
       password: form.value.password,
-    });
+    })
   } catch (err) {
-    error.value = err.response?.data?.message || "Registration failed. Please try again.";
+    error.value = err.response?.data?.message || 'Registration failed. Please try again.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 </script>
 
 <template>

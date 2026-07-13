@@ -1,72 +1,72 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import axios from "axios";
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
 
-const route = useRoute();
-const driveId = route.params.id;
+const route = useRoute()
+const driveId = route.params.id
 
-const drive = ref(null);
-const applicants = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const actingId = ref(null);
-const actionError = ref("");
-const search = ref("");
+const drive = ref(null)
+const applicants = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const actingId = ref(null)
+const actionError = ref('')
+const search = ref('')
 
 const filteredApplicants = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  if (!query) return applicants.value;
+  const query = search.value.trim().toLowerCase()
+  if (!query) return applicants.value
   return applicants.value.filter(
-    (applicant) =>
+    applicant =>
       applicant.studentName.toLowerCase().includes(query) ||
       applicant.studentEmail.toLowerCase().includes(query) ||
       applicant.status.toLowerCase().includes(query),
-  );
-});
+  )
+})
 
-const selectedApplicant = ref(null);
-const showModal = ref(false);
+const selectedApplicant = ref(null)
+const showModal = ref(false)
 
-const viewApplicant = (applicant) => {
-  selectedApplicant.value = applicant;
-  showModal.value = true;
-};
+const viewApplicant = applicant => {
+  selectedApplicant.value = applicant
+  showModal.value = true
+}
 
 const fetchApplicants = async () => {
   try {
-    const { data } = await axios.get(`/api/company/drives/${driveId}/applicants`);
-    drive.value = data.drive;
-    applicants.value = data.applicants;
+    const { data } = await axios.get(`/api/company/drives/${driveId}/applicants`)
+    drive.value = data.drive
+    applicants.value = data.applicants
   } catch (err) {
-    error.value = err.response?.data?.message || "Could not load applicants.";
+    error.value = err.response?.data?.message || 'Could not load applicants.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-onMounted(fetchApplicants);
+onMounted(fetchApplicants)
 
 const updateStatus = async (applicantId, status) => {
-  actionError.value = "";
-  actingId.value = applicantId;
+  actionError.value = ''
+  actingId.value = applicantId
   try {
-    await axios.put(`/api/company/applications/${applicantId}/status`, { status });
-    await fetchApplicants();
+    await axios.put(`/api/company/applications/${applicantId}/status`, { status })
+    await fetchApplicants()
   } catch (err) {
-    actionError.value = err.response?.data?.message || "Failed to update status.";
+    actionError.value = err.response?.data?.message || 'Failed to update status.'
   } finally {
-    actingId.value = null;
+    actingId.value = null
   }
-};
+}
 
-const statusBadgeClass = (status) =>
+const statusBadgeClass = status =>
   ({
-    applied: "badge-applied",
-    shortlisted: "badge-shortlisted",
-    selected: "badge-selected",
-    rejected: "badge-rejected",
-  })[status] || "badge-applied";
+    applied: 'badge-applied',
+    shortlisted: 'badge-shortlisted',
+    selected: 'badge-selected',
+    rejected: 'badge-rejected',
+  })[status] || 'badge-applied'
 </script>
 
 <template>
@@ -168,13 +168,13 @@ const statusBadgeClass = (status) =>
 
         <dl class="detail-grid">
           <dt>Degree / Branch</dt>
-          <dd>{{ selectedApplicant.degree || "Not provided" }}</dd>
+          <dd>{{ selectedApplicant.degree || 'Not provided' }}</dd>
           <dt>Graduation Year</dt>
-          <dd>{{ selectedApplicant.graduationYear || "Not provided" }}</dd>
+          <dd>{{ selectedApplicant.graduationYear || 'Not provided' }}</dd>
           <dt>CGPA</dt>
-          <dd>{{ selectedApplicant.cgpa ?? "Not provided" }}</dd>
+          <dd>{{ selectedApplicant.cgpa ?? 'Not provided' }}</dd>
           <dt>Skills</dt>
-          <dd>{{ selectedApplicant.skills || "Not provided" }}</dd>
+          <dd>{{ selectedApplicant.skills || 'Not provided' }}</dd>
           <dt>Resume</dt>
           <dd>
             <a

@@ -1,26 +1,26 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import { router } from "../../router";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { router } from '../../router'
 
-const status = ref(null);
-const isLoading = ref(true);
-const error = ref("");
+const status = ref(null)
+const isLoading = ref(true)
+const error = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get("/api/company/status");
-    if (data.approvalStatus === "approved") {
-      router.replace("/company/dashboard");
-      return;
+    const { data } = await axios.get('/api/company/status')
+    if (data.approvalStatus === 'approved') {
+      router.replace('/company/dashboard')
+      return
     }
-    status.value = data;
+    status.value = data
   } catch (err) {
-    error.value = "Could not load your company status.";
+    error.value = 'Could not load your company status.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 </script>
 
 <template>

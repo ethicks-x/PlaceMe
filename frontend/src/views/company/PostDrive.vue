@@ -1,73 +1,73 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import { router } from "../../router";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { router } from '../../router'
 
-const isLoading = ref(true);
-const loadError = ref("");
+const isLoading = ref(true)
+const loadError = ref('')
 
 const form = ref({
-  jobTitle: "",
-  jobDesc: "",
-  eligibility: "",
-  minCgpa: "",
-  eligibleGraduationYear: "",
-  deadline: "",
-});
-const isSubmitting = ref(false);
-const formError = ref("");
-const formSuccess = ref("");
-const todayDate = new Date().toISOString().split("T")[0];
+  jobTitle: '',
+  jobDesc: '',
+  eligibility: '',
+  minCgpa: '',
+  eligibleGraduationYear: '',
+  deadline: '',
+})
+const isSubmitting = ref(false)
+const formError = ref('')
+const formSuccess = ref('')
+const todayDate = new Date().toISOString().split('T')[0]
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get("/api/company/status");
-    if (data.approvalStatus !== "approved") {
-      router.replace("/company/pending");
-      return;
+    const { data } = await axios.get('/api/company/status')
+    if (data.approvalStatus !== 'approved') {
+      router.replace('/company/pending')
+      return
     }
   } catch (err) {
-    loadError.value = "Could not load your company details.";
+    loadError.value = 'Could not load your company details.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 
 const handleCreate = async () => {
-  formError.value = "";
-  formSuccess.value = "";
+  formError.value = ''
+  formSuccess.value = ''
 
   if (form.value.deadline < todayDate) {
-    formError.value = "The application deadline must be in the future.";
-    return;
+    formError.value = 'The application deadline must be in the future.'
+    return
   }
 
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   try {
-    await axios.post("/api/company/drives", {
+    await axios.post('/api/company/drives', {
       jobTitle: form.value.jobTitle,
       jobDesc: form.value.jobDesc,
       eligibility: form.value.eligibility,
       minCgpa: form.value.minCgpa || null,
       eligibleGraduationYear: form.value.eligibleGraduationYear || null,
       deadline: new Date(form.value.deadline).toISOString(),
-    });
-    formSuccess.value = "Drive submitted for admin approval.";
+    })
+    formSuccess.value = 'Drive submitted for admin approval.'
     form.value = {
-      jobTitle: "",
-      jobDesc: "",
-      eligibility: "",
-      minCgpa: "",
-      eligibleGraduationYear: "",
-      deadline: "",
-    };
+      jobTitle: '',
+      jobDesc: '',
+      eligibility: '',
+      minCgpa: '',
+      eligibleGraduationYear: '',
+      deadline: '',
+    }
   } catch (err) {
-    formError.value = err.response?.data?.message || "Failed to create drive.";
+    formError.value = err.response?.data?.message || 'Failed to create drive.'
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <template>

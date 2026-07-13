@@ -1,21 +1,21 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const stats = ref(null);
-const isLoading = ref(true);
-const error = ref("");
+const stats = ref(null)
+const isLoading = ref(true)
+const error = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get("/api/admin/stats");
-    stats.value = data;
+    const { data } = await axios.get('/api/admin/stats')
+    stats.value = data
   } catch (err) {
-    error.value = "Could not load statistics.";
+    error.value = 'Could not load statistics.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 </script>
 
 <template>

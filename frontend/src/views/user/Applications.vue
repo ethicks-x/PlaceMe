@@ -1,41 +1,41 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import axios from "axios";
+import { computed, onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const applications = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
+const applications = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const search = ref('')
 
 const filteredApplications = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  if (!query) return applications.value;
+  const query = search.value.trim().toLowerCase()
+  if (!query) return applications.value
   return applications.value.filter(
-    (appl) =>
+    appl =>
       appl.companyName.toLowerCase().includes(query) ||
       appl.jobTitle.toLowerCase().includes(query) ||
       appl.status.toLowerCase().includes(query),
-  );
-});
+  )
+})
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get("/api/applications");
-    applications.value = data;
+    const { data } = await axios.get('/api/applications')
+    applications.value = data
   } catch (err) {
-    error.value = "Could not load your applications.";
+    error.value = 'Could not load your applications.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-});
+})
 
-const statusClass = (status) =>
+const statusClass = status =>
   ({
-    applied: "badge-applied",
-    shortlisted: "badge-shortlisted",
-    selected: "badge-selected",
-    rejected: "badge-rejected",
-  })[status] || "badge-applied";
+    applied: 'badge-applied',
+    shortlisted: 'badge-shortlisted',
+    selected: 'badge-selected',
+    rejected: 'badge-rejected',
+  })[status] || 'badge-applied'
 </script>
 
 <template>

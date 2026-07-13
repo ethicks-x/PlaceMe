@@ -1,66 +1,66 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import axios from "axios";
+import { computed, onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const drives = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const applyingId = ref(null);
-const applyError = ref("");
-const search = ref("");
-const profileComplete = ref(true);
-const missingProfileFields = ref([]);
+const drives = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const applyingId = ref(null)
+const applyError = ref('')
+const search = ref('')
+const profileComplete = ref(true)
+const missingProfileFields = ref([])
 
 const filteredDrives = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  if (!query) return drives.value;
+  const query = search.value.trim().toLowerCase()
+  if (!query) return drives.value
   return drives.value.filter(
-    (drive) =>
+    drive =>
       drive.jobTitle.toLowerCase().includes(query) ||
       drive.companyName.toLowerCase().includes(query) ||
       drive.eligibility.toLowerCase().includes(query),
-  );
-});
+  )
+})
 
 const fetchDrives = async () => {
   try {
-    const { data } = await axios.get("/api/drives");
-    drives.value = data;
+    const { data } = await axios.get('/api/drives')
+    drives.value = data
   } catch (err) {
-    error.value = "Could not load placement drives.";
+    error.value = 'Could not load placement drives.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchProfileStatus = async () => {
   try {
-    const { data } = await axios.get("/api/profile");
-    profileComplete.value = data.profileComplete !== false;
-    missingProfileFields.value = data.missingProfileFields || [];
+    const { data } = await axios.get('/api/profile')
+    profileComplete.value = data.profileComplete !== false
+    missingProfileFields.value = data.missingProfileFields || []
   } catch (err) {
-    profileComplete.value = true;
+    profileComplete.value = true
   }
-};
+}
 
 onMounted(() => {
-  fetchDrives();
-  fetchProfileStatus();
-});
+  fetchDrives()
+  fetchProfileStatus()
+})
 
-const applyToDrive = async (driveId) => {
-  applyError.value = "";
-  applyingId.value = driveId;
+const applyToDrive = async driveId => {
+  applyError.value = ''
+  applyingId.value = driveId
 
   try {
-    await axios.post(`/api/drives/${driveId}/apply`);
-    await fetchDrives();
+    await axios.post(`/api/drives/${driveId}/apply`)
+    await fetchDrives()
   } catch (err) {
-    applyError.value = err.response?.data?.message || "Failed to apply.";
+    applyError.value = err.response?.data?.message || 'Failed to apply.'
   } finally {
-    applyingId.value = null;
+    applyingId.value = null
   }
-};
+}
 </script>
 
 <template>
@@ -76,7 +76,7 @@ const applyToDrive = async (driveId) => {
     <div v-else>
       <div v-if="!profileComplete" class="alert alert-warning profile-notice py-3 mb-4">
         <strong>Complete your profile to apply.</strong>
-        Missing: {{ missingProfileFields.join(", ") }}.
+        Missing: {{ missingProfileFields.join(', ') }}.
         <router-link to="/profile" class="ms-1">Update your profile &rarr;</router-link>
       </div>
 

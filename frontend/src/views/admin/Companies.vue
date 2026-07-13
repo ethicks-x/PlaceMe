@@ -1,56 +1,56 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const companies = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
-const statusFilter = ref("");
-const actingId = ref(null);
-const selectedCompany = ref(null);
-const showModal = ref(false);
+const companies = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const search = ref('')
+const statusFilter = ref('')
+const actingId = ref(null)
+const selectedCompany = ref(null)
+const showModal = ref(false)
 
-const viewCompany = (company) => {
-  selectedCompany.value = company;
-  showModal.value = true;
-};
+const viewCompany = company => {
+  selectedCompany.value = company
+  showModal.value = true
+}
 
 const fetchCompanies = async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const { data } = await axios.get("/api/admin/companies", {
+    const { data } = await axios.get('/api/admin/companies', {
       params: { search: search.value || undefined, status: statusFilter.value || undefined },
-    });
-    companies.value = data;
+    })
+    companies.value = data
   } catch (err) {
-    error.value = "Could not load companies.";
+    error.value = 'Could not load companies.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-onMounted(fetchCompanies);
+onMounted(fetchCompanies)
 
 const runAction = async (companyId, action) => {
-  error.value = "";
-  actingId.value = companyId;
+  error.value = ''
+  actingId.value = companyId
   try {
-    await axios.post(`/api/admin/companies/${companyId}/${action}`);
-    await fetchCompanies();
+    await axios.post(`/api/admin/companies/${companyId}/${action}`)
+    await fetchCompanies()
   } catch (err) {
-    error.value = err.response?.data?.message || "Action failed.";
+    error.value = err.response?.data?.message || 'Action failed.'
   } finally {
-    actingId.value = null;
+    actingId.value = null
   }
-};
+}
 
-const statusBadgeClass = (status) =>
+const statusBadgeClass = status =>
   ({
-    pending: "badge-pending",
-    approved: "badge-approved",
-    rejected: "badge-rejected",
-  })[status] || "badge-pending";
+    pending: 'badge-pending',
+    approved: 'badge-approved',
+    rejected: 'badge-rejected',
+  })[status] || 'badge-pending'
 </script>
 
 <template>
@@ -117,7 +117,7 @@ const statusBadgeClass = (status) =>
               </td>
               <td>
                 <span class="badge" :class="company.isActive ? 'badge-approved' : 'badge-rejected'">
-                  {{ company.isActive ? "Active" : "Deactivated" }}
+                  {{ company.isActive ? 'Active' : 'Deactivated' }}
                 </span>
               </td>
               <td>
@@ -143,7 +143,7 @@ const statusBadgeClass = (status) =>
                     :disabled="actingId === company.id"
                     @click="runAction(company.id, company.isActive ? 'deactivate' : 'activate')"
                   >
-                    {{ company.isActive ? "Deactivate" : "Activate" }}
+                    {{ company.isActive ? 'Deactivate' : 'Activate' }}
                   </button>
                 </div>
               </td>
@@ -177,7 +177,7 @@ const statusBadgeClass = (status) =>
             <span
               class="badge"
               :class="selectedCompany.isActive ? 'badge-approved' : 'badge-rejected'"
-              >{{ selectedCompany.isActive ? "Active" : "Deactivated" }}</span
+              >{{ selectedCompany.isActive ? 'Active' : 'Deactivated' }}</span
             >
           </dd>
         </dl>

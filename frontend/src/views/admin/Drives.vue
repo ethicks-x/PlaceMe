@@ -1,57 +1,57 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const drives = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
-const statusFilter = ref("");
-const actingId = ref(null);
-const selectedDrive = ref(null);
-const showModal = ref(false);
+const drives = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const search = ref('')
+const statusFilter = ref('')
+const actingId = ref(null)
+const selectedDrive = ref(null)
+const showModal = ref(false)
 
 const fetchDrives = async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const { data } = await axios.get("/api/admin/drives", {
+    const { data } = await axios.get('/api/admin/drives', {
       params: { search: search.value || undefined, status: statusFilter.value || undefined },
-    });
-    drives.value = data;
+    })
+    drives.value = data
   } catch (err) {
-    error.value = "Could not load placement drives.";
+    error.value = 'Could not load placement drives.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-const viewDrive = (drive) => {
-  selectedDrive.value = drive;
-  showModal.value = true;
-};
+const viewDrive = drive => {
+  selectedDrive.value = drive
+  showModal.value = true
+}
 
-onMounted(fetchDrives);
+onMounted(fetchDrives)
 
 const runAction = async (driveId, action) => {
-  error.value = "";
-  actingId.value = driveId;
+  error.value = ''
+  actingId.value = driveId
   try {
-    await axios.post(`/api/admin/drives/${driveId}/${action}`);
-    await fetchDrives();
+    await axios.post(`/api/admin/drives/${driveId}/${action}`)
+    await fetchDrives()
   } catch (err) {
-    error.value = err.response?.data?.message || "Action failed.";
+    error.value = err.response?.data?.message || 'Action failed.'
   } finally {
-    actingId.value = null;
+    actingId.value = null
   }
-};
+}
 
-const statusBadgeClass = (status) =>
+const statusBadgeClass = status =>
   ({
-    Pending: "badge-pending",
-    Approved: "badge-approved",
-    Rejected: "badge-rejected",
-    Closed: "badge-closed",
-  })[status] || "badge-pending";
+    Pending: 'badge-pending',
+    Approved: 'badge-approved',
+    Rejected: 'badge-rejected',
+    Closed: 'badge-closed',
+  })[status] || 'badge-pending'
 </script>
 
 <template>

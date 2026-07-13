@@ -1,43 +1,43 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 
-const students = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
-const actingId = ref(null);
+const students = ref([])
+const isLoading = ref(true)
+const error = ref('')
+const search = ref('')
+const actingId = ref(null)
 
 const fetchStudents = async () => {
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const { data } = await axios.get("/api/admin/students", {
+    const { data } = await axios.get('/api/admin/students', {
       params: { search: search.value || undefined },
-    });
-    students.value = data;
+    })
+    students.value = data
   } catch (err) {
-    error.value = "Could not load students.";
+    error.value = 'Could not load students.'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
-onMounted(fetchStudents);
+onMounted(fetchStudents)
 
-const toggleActive = async (student) => {
-  error.value = "";
-  actingId.value = student.id;
+const toggleActive = async student => {
+  error.value = ''
+  actingId.value = student.id
   try {
     await axios.post(
-      `/api/admin/students/${student.id}/${student.isActive ? "deactivate" : "activate"}`,
-    );
-    await fetchStudents();
+      `/api/admin/students/${student.id}/${student.isActive ? 'deactivate' : 'activate'}`,
+    )
+    await fetchStudents()
   } catch (err) {
-    error.value = err.response?.data?.message || "Action failed.";
+    error.value = err.response?.data?.message || 'Action failed.'
   } finally {
-    actingId.value = null;
+    actingId.value = null
   }
-};
+}
 </script>
 
 <template>
@@ -78,7 +78,7 @@ const toggleActive = async (student) => {
               <td>{{ student.mobile }}</td>
               <td>
                 <span class="badge" :class="student.isActive ? 'badge-approved' : 'badge-rejected'">
-                  {{ student.isActive ? "Active" : "Deactivated" }}
+                  {{ student.isActive ? 'Active' : 'Deactivated' }}
                 </span>
               </td>
               <td>
@@ -87,7 +87,7 @@ const toggleActive = async (student) => {
                   :disabled="actingId === student.id"
                   @click="toggleActive(student)"
                 >
-                  {{ student.isActive ? "Deactivate" : "Activate" }}
+                  {{ student.isActive ? 'Deactivate' : 'Activate' }}
                 </button>
               </td>
             </tr>
