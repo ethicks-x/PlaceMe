@@ -1,8 +1,8 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { useAuth } from './store/auth'
+import { RouterLink, RouterView } from "vue-router";
+import { useAuth } from "./store/auth";
 
-const { authState } = useAuth()
+const { authState } = useAuth();
 </script>
 
 <template>
@@ -35,7 +35,7 @@ body {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background: linear-gradient(
     135deg,
     var(--background-start) 0%,

@@ -86,10 +86,10 @@
 </template>
 
 <style scoped>
-@import url('bootstrap-icons/font/bootstrap-icons.css');
+@import url("bootstrap-icons/font/bootstrap-icons.css");
 
 .landing-page-wrapper {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background: transparent;
   color: var(--text-color);
   overflow-x: hidden;

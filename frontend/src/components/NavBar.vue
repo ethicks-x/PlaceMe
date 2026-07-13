@@ -1,15 +1,15 @@
 <script setup>
-import { computed } from 'vue'
-import { useAuth } from '../store/auth'
+import { computed } from "vue";
+import { useAuth } from "../store/auth";
 
 const props = defineProps({
   role: {
     type: String,
-    default: 'guest',
+    default: "guest",
   },
-})
+});
 
-const { logout } = useAuth()
+const { logout } = useAuth();
 </script>
 
 <template>

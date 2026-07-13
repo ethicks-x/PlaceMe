@@ -1,61 +1,61 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import axios from 'axios'
-import { router } from '../../router'
+import { computed, onMounted, ref } from "vue";
+import axios from "axios";
+import { router } from "../../router";
 
 defineOptions({
-  name: 'CompanyDashboard',
-})
+  name: "CompanyDashboard",
+});
 
-const company = ref(null)
-const drives = ref([])
-const isLoading = ref(true)
-const error = ref('')
-const search = ref('')
+const company = ref(null);
+const drives = ref([]);
+const isLoading = ref(true);
+const error = ref("");
+const search = ref("");
 
 const filteredDrives = computed(() => {
-  const query = search.value.trim().toLowerCase()
-  if (!query) return drives.value
+  const query = search.value.trim().toLowerCase();
+  if (!query) return drives.value;
   return drives.value.filter(
     drive =>
       drive.jobTitle.toLowerCase().includes(query) || drive.status.toLowerCase().includes(query),
-  )
-})
+  );
+});
 
 const fetchDrives = async () => {
   try {
-    const { data } = await axios.get('/api/company/drives')
-    drives.value = data
+    const { data } = await axios.get("/api/company/drives");
+    drives.value = data;
   } catch (err) {
-    error.value = 'Could not load your drives.'
+    error.value = "Could not load your drives.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get('/api/company/status')
-    if (data.approvalStatus !== 'approved') {
-      router.replace('/company/pending')
-      return
+    const { data } = await axios.get("/api/company/status");
+    if (data.approvalStatus !== "approved") {
+      router.replace("/company/pending");
+      return;
     }
-    company.value = data
-    await fetchDrives()
+    company.value = data;
+    await fetchDrives();
   } catch (err) {
-    error.value = 'Could not load your company details.'
+    error.value = "Could not load your company details.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-})
+});
 
 const statusBadgeClass = status =>
   ({
-    Pending: 'badge-pending',
-    Approved: 'badge-approved',
-    Rejected: 'badge-rejected',
-    Closed: 'badge-closed',
-  })[status] || 'badge-pending'
+    Pending: "badge-pending",
+    Approved: "badge-approved",
+    Rejected: "badge-rejected",
+    Closed: "badge-closed",
+  })[status] || "badge-pending";
 </script>
 
 <template>

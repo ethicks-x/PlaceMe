@@ -1,81 +1,81 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { router } from '../router'
-import { useAuth } from '../store/auth'
-import axios from 'axios'
+import { computed, ref } from "vue";
+import { RouterLink, useRoute } from "vue-router";
+import { router } from "../router";
+import { useAuth } from "../store/auth";
+import axios from "axios";
 
-const route = useRoute()
-const { login, signup } = useAuth()
+const route = useRoute();
+const { login, signup } = useAuth();
 
 // trying out some UX
-const isPasswordFocused = ref(false)
+const isPasswordFocused = ref(false);
 const passwordCriteria = computed(() => {
-  const p = signupForm.value.password || ''
+  const p = signupForm.value.password || "";
   return {
     length: p.length >= 8,
     uppercase: /[A-Z]/.test(p),
     number: /[0-9]/.test(p),
     special: /[^A-Za-z0-9]/.test(p),
-  }
-})
+  };
+});
 
 // This computed property determines which tab should be active
 // based on the URL path. It makes the component reactive to URL changes.
 const activeTab = computed(() => {
-  if (route.path.includes('/signup')) {
-    return 'signup'
+  if (route.path.includes("/signup")) {
+    return "signup";
   }
-  return 'login'
-})
+  return "login";
+});
 
 const loginForm = ref({
-  email: '',
-  password: '',
+  email: "",
+  password: "",
   rememberMe: false,
-})
+});
 
 const signupForm = ref({
-  name: '',
-  email: '',
-  mobile: '',
-  password: '',
-  confirmPassword: '',
-})
+  name: "",
+  email: "",
+  mobile: "",
+  password: "",
+  confirmPassword: "",
+});
 
-const isLoading = ref(false)
+const isLoading = ref(false);
 
 const errors = ref({
-  login: '',
-  signup: '',
-})
+  login: "",
+  signup: "",
+});
 
 const handleLogin = async () => {
-  console.log('Logging in with:', loginForm.value)
+  console.log("Logging in with:", loginForm.value);
 
-  errors.value.login = ''
-  isLoading.value = true
+  errors.value.login = "";
+  isLoading.value = true;
 
   try {
     await login({
       email: loginForm.value.email,
       password: loginForm.value.password,
       rememberMe: loginForm.value.rememberMe,
-    })
+    });
   } catch (err) {
-    errors.value.login = err.response?.data?.message || 'Could not log in.'
+    errors.value.login = err.response?.data?.message || "Could not log in.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 const handleSignup = async () => {
-  console.log('Signing up with:', signupForm.value)
-  errors.value.signup = ''
-  isLoading.value = true
+  console.log("Signing up with:", signupForm.value);
+  errors.value.signup = "";
+  isLoading.value = true;
   if (signupForm.value.password !== signupForm.value.confirmPassword) {
-    errors.value.signup = 'Passwords do not match.'
-    return
+    errors.value.signup = "Passwords do not match.";
+    return;
   }
 
   try {
@@ -85,13 +85,13 @@ const handleSignup = async () => {
       mobile: signupForm.value.mobile,
       password: signupForm.value.password,
       confirmPassword: signupForm.value.confirmPassword,
-    })
+    });
   } catch (err) {
-    errors.value.signup = err.response?.data?.message || 'Signup Failed. Please try again.'
+    errors.value.signup = err.response?.data?.message || "Signup Failed. Please try again.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 </script>
 
 <template>

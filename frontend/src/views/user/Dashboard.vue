@@ -1,29 +1,29 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
-import { useAuth } from '../../store/auth'
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import { useAuth } from "../../store/auth";
 
-const { authState } = useAuth()
+const { authState } = useAuth();
 
-const dashboard = ref(null)
-const isLoading = ref(true)
-const error = ref('')
+const dashboard = ref(null);
+const isLoading = ref(true);
+const error = ref("");
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get('/api/dashboard')
-    dashboard.value = data
+    const { data } = await axios.get("/api/dashboard");
+    dashboard.value = data;
   } catch (err) {
-    error.value = 'Could not load your dashboard right now.'
+    error.value = "Could not load your dashboard right now.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-})
+});
 </script>
 
 <template>
   <b-container class="dashboard-wrapper py-5">
-    <h1 class="mb-4">Welcome back, {{ authState.user?.fullName || 'Student' }}</h1>
+    <h1 class="mb-4">Welcome back, {{ authState.user?.fullName || "Student" }}</h1>
 
     <div v-if="isLoading" class="text-muted">Loading dashboard...</div>
 
