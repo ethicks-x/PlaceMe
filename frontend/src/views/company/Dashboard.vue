@@ -1,61 +1,61 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import axios from "axios";
-import { router } from "../../router";
+  import { computed, onMounted, ref } from "vue";
+  import axios from "axios";
+  import { router } from "../../router";
 
-defineOptions({
-  name: "CompanyDashboard",
-});
+  defineOptions({
+    name: "CompanyDashboard",
+  });
 
-const company = ref(null);
-const drives = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
+  const company = ref(null);
+  const drives = ref([]);
+  const isLoading = ref(true);
+  const error = ref("");
+  const search = ref("");
 
-const filteredDrives = computed(() => {
-  const query = search.value.trim().toLowerCase();
-  if (!query) return drives.value;
-  return drives.value.filter(
-    drive =>
-      drive.jobTitle.toLowerCase().includes(query) || drive.status.toLowerCase().includes(query),
-  );
-});
+  const filteredDrives = computed(() => {
+    const query = search.value.trim().toLowerCase();
+    if (!query) return drives.value;
+    return drives.value.filter(
+      drive =>
+        drive.jobTitle.toLowerCase().includes(query) || drive.status.toLowerCase().includes(query),
+    );
+  });
 
-const fetchDrives = async () => {
-  try {
-    const { data } = await axios.get("/api/company/drives");
-    drives.value = data;
-  } catch (err) {
-    error.value = "Could not load your drives.";
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/company/status");
-    if (data.approvalStatus !== "approved") {
-      router.replace("/company/pending");
-      return;
+  const fetchDrives = async () => {
+    try {
+      const { data } = await axios.get("/api/company/drives");
+      drives.value = data;
+    } catch (err) {
+      error.value = "Could not load your drives.";
+    } finally {
+      isLoading.value = false;
     }
-    company.value = data;
-    await fetchDrives();
-  } catch (err) {
-    error.value = "Could not load your company details.";
-  } finally {
-    isLoading.value = false;
-  }
-});
+  };
 
-const statusBadgeClass = status =>
-  ({
-    Pending: "badge-pending",
-    Approved: "badge-approved",
-    Rejected: "badge-rejected",
-    Closed: "badge-closed",
-  })[status] || "badge-pending";
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/company/status");
+      if (data.approvalStatus !== "approved") {
+        router.replace("/company/pending");
+        return;
+      }
+      company.value = data;
+      await fetchDrives();
+    } catch (err) {
+      error.value = "Could not load your company details.";
+    } finally {
+      isLoading.value = false;
+    }
+  });
+
+  const statusBadgeClass = status =>
+    ({
+      Pending: "badge-pending",
+      Approved: "badge-approved",
+      Rejected: "badge-rejected",
+      Closed: "badge-closed",
+    })[status] || "badge-pending";
 </script>
 
 <template>
@@ -168,90 +168,90 @@ const statusBadgeClass = status =>
 </template>
 
 <style scoped>
-.search-input {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  padding: 0.85rem 1rem;
-  border-radius: 0.5rem;
-  max-width: 420px;
-}
-.search-input::placeholder {
-  color: #64748b;
-}
-.details-card,
-.admin-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-}
-.admin-card {
-  padding: 0;
-  overflow: hidden;
-}
+  .search-input {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+    max-width: 420px;
+  }
+  .search-input::placeholder {
+    color: #64748b;
+  }
+  .details-card,
+  .admin-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+  .admin-card {
+    padding: 0;
+    overflow: hidden;
+  }
 
-.btn-custom {
-  background-color: #38bdf8;
-  color: #020617;
-  font-weight: 700;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  border: none;
-  text-decoration: none;
-  display: inline-block;
-}
-.btn-custom:hover:not(:disabled) {
-  background-color: #34d399;
-  color: #020617;
-}
-.btn-custom:disabled {
-  background-color: #64748b;
-  color: #94a3b8;
-}
+  .btn-custom {
+    background-color: #38bdf8;
+    color: #020617;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-custom:hover:not(:disabled) {
+    background-color: #34d399;
+    color: #020617;
+  }
+  .btn-custom:disabled {
+    background-color: #64748b;
+    color: #94a3b8;
+  }
 
-.admin-table {
-  --bs-table-bg: transparent;
-  --bs-table-color: #f8fafc;
-  --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
-  --bs-table-hover-color: #f8fafc;
-  --bs-table-border-color: rgba(255, 255, 255, 0.08);
-}
-.admin-table thead th {
-  background: rgba(15, 23, 42, 0.6);
-  color: #94a3b8;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.admin-table tbody td {
-  padding: 1rem 1.5rem;
-}
-.admin-table tbody tr:last-child td {
-  border-bottom: none;
-}
+  .admin-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8fafc;
+    --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
+    --bs-table-hover-color: #f8fafc;
+    --bs-table-border-color: rgba(255, 255, 255, 0.08);
+  }
+  .admin-table thead th {
+    background: rgba(15, 23, 42, 0.6);
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .admin-table tbody td {
+    padding: 1rem 1.5rem;
+  }
+  .admin-table tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-.badge {
-  font-weight: 600;
-  padding: 0.4rem 0.75rem;
-}
-.badge-pending {
-  background-color: rgba(250, 204, 21, 0.2);
-  color: #facc15;
-}
-.badge-approved {
-  background-color: rgba(52, 211, 153, 0.2);
-  color: #34d399;
-}
-.badge-rejected {
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-}
-.badge-closed {
-  background-color: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
-}
+  .badge {
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+  }
+  .badge-pending {
+    background-color: rgba(250, 204, 21, 0.2);
+    color: #facc15;
+  }
+  .badge-approved {
+    background-color: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+  }
+  .badge-rejected {
+    background-color: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+  }
+  .badge-closed {
+    background-color: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+  }
 </style>

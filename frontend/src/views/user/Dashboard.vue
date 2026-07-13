@@ -1,24 +1,24 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import { useAuth } from "../../store/auth";
+  import { onMounted, ref } from "vue";
+  import axios from "axios";
+  import { useAuth } from "../../store/auth";
 
-const { authState } = useAuth();
+  const { authState } = useAuth();
 
-const dashboard = ref(null);
-const isLoading = ref(true);
-const error = ref("");
+  const dashboard = ref(null);
+  const isLoading = ref(true);
+  const error = ref("");
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/dashboard");
-    dashboard.value = data;
-  } catch (err) {
-    error.value = "Could not load your dashboard right now.";
-  } finally {
-    isLoading.value = false;
-  }
-});
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/dashboard");
+      dashboard.value = data;
+    } catch (err) {
+      error.value = "Could not load your dashboard right now.";
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
@@ -59,22 +59,22 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.stat-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  text-align: center;
-}
+  .stat-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
 
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #38bdf8;
-}
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
 
-.stat-label {
-  color: #94a3b8;
-  margin-top: 0.5rem;
-}
+  .stat-label {
+    color: #94a3b8;
+    margin-top: 0.5rem;
+  }
 </style>

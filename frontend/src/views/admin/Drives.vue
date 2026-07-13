@@ -1,57 +1,57 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+  import { onMounted, ref } from "vue";
+  import axios from "axios";
 
-const drives = ref([]);
-const isLoading = ref(true);
-const error = ref("");
-const search = ref("");
-const statusFilter = ref("");
-const actingId = ref(null);
-const selectedDrive = ref(null);
-const showModal = ref(false);
+  const drives = ref([]);
+  const isLoading = ref(true);
+  const error = ref("");
+  const search = ref("");
+  const statusFilter = ref("");
+  const actingId = ref(null);
+  const selectedDrive = ref(null);
+  const showModal = ref(false);
 
-const fetchDrives = async () => {
-  isLoading.value = true;
-  try {
-    const { data } = await axios.get("/api/admin/drives", {
-      params: { search: search.value || undefined, status: statusFilter.value || undefined },
-    });
-    drives.value = data;
-  } catch (err) {
-    error.value = "Could not load placement drives.";
-  } finally {
-    isLoading.value = false;
-  }
-};
+  const fetchDrives = async () => {
+    isLoading.value = true;
+    try {
+      const { data } = await axios.get("/api/admin/drives", {
+        params: { search: search.value || undefined, status: statusFilter.value || undefined },
+      });
+      drives.value = data;
+    } catch (err) {
+      error.value = "Could not load placement drives.";
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
-const viewDrive = drive => {
-  selectedDrive.value = drive;
-  showModal.value = true;
-};
+  const viewDrive = drive => {
+    selectedDrive.value = drive;
+    showModal.value = true;
+  };
 
-onMounted(fetchDrives);
+  onMounted(fetchDrives);
 
-const runAction = async (driveId, action) => {
-  error.value = "";
-  actingId.value = driveId;
-  try {
-    await axios.post(`/api/admin/drives/${driveId}/${action}`);
-    await fetchDrives();
-  } catch (err) {
-    error.value = err.response?.data?.message || "Action failed.";
-  } finally {
-    actingId.value = null;
-  }
-};
+  const runAction = async (driveId, action) => {
+    error.value = "";
+    actingId.value = driveId;
+    try {
+      await axios.post(`/api/admin/drives/${driveId}/${action}`);
+      await fetchDrives();
+    } catch (err) {
+      error.value = err.response?.data?.message || "Action failed.";
+    } finally {
+      actingId.value = null;
+    }
+  };
 
-const statusBadgeClass = status =>
-  ({
-    Pending: "badge-pending",
-    Approved: "badge-approved",
-    Rejected: "badge-rejected",
-    Closed: "badge-closed",
-  })[status] || "badge-pending";
+  const statusBadgeClass = status =>
+    ({
+      Pending: "badge-pending",
+      Approved: "badge-approved",
+      Rejected: "badge-rejected",
+      Closed: "badge-closed",
+    })[status] || "badge-pending";
 </script>
 
 <template>
@@ -170,139 +170,139 @@ const statusBadgeClass = status =>
 </template>
 
 <style scoped>
-.search-input {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  max-width: 320px;
-}
-.search-input::placeholder {
-  color: #64748b;
-}
+  .search-input {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    max-width: 320px;
+  }
+  .search-input::placeholder {
+    color: #64748b;
+  }
 
-.status-select {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  max-width: 240px;
-}
+  .status-select {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    max-width: 240px;
+  }
 
-.btn-custom {
-  background-color: #38bdf8;
-  color: #020617;
-  font-weight: 700;
-  border: none;
-  padding: 0.5rem 1.25rem;
-  border-radius: 0.5rem;
-}
-.btn-custom:hover {
-  background-color: #34d399;
-}
+  .btn-custom {
+    background-color: #38bdf8;
+    color: #020617;
+    font-weight: 700;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+  }
+  .btn-custom:hover {
+    background-color: #34d399;
+  }
 
-.btn-link-name {
-  background: none;
-  border: none;
-  padding: 0;
-  color: #f8fafc;
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.btn-link-name:hover {
-  color: #38bdf8;
-}
+  .btn-link-name {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #f8fafc;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .btn-link-name:hover {
+    color: #38bdf8;
+  }
 
-.detail-grid {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 0.5rem 1.5rem;
-  margin-bottom: 0;
-}
-.detail-grid dt {
-  color: #94a3b8;
-  font-weight: 500;
-}
-.detail-grid dd {
-  margin: 0;
-}
+  .detail-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 0;
+  }
+  .detail-grid dt {
+    color: #94a3b8;
+    font-weight: 500;
+  }
+  .detail-grid dd {
+    margin: 0;
+  }
 
-.bio-heading {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #94a3b8;
-  margin-bottom: 0.5rem;
-}
+  .bio-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+  }
 
-.admin-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  overflow: hidden;
-}
+  .admin-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
 
-.admin-table {
-  --bs-table-bg: transparent;
-  --bs-table-color: #f8fafc;
-  --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
-  --bs-table-hover-color: #f8fafc;
-  --bs-table-border-color: rgba(255, 255, 255, 0.08);
-}
-.admin-table thead th {
-  background: rgba(15, 23, 42, 0.6);
-  color: #94a3b8;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.admin-table tbody td {
-  padding: 1rem 1.5rem;
-}
-.admin-table tbody tr:last-child td {
-  border-bottom: none;
-}
+  .admin-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #f8fafc;
+    --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
+    --bs-table-hover-color: #f8fafc;
+    --bs-table-border-color: rgba(255, 255, 255, 0.08);
+  }
+  .admin-table thead th {
+    background: rgba(15, 23, 42, 0.6);
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .admin-table tbody td {
+    padding: 1rem 1.5rem;
+  }
+  .admin-table tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-.badge {
-  font-weight: 600;
-  padding: 0.4rem 0.75rem;
-}
-.badge-pending {
-  background-color: rgba(250, 204, 21, 0.2);
-  color: #facc15;
-}
-.badge-approved {
-  background-color: rgba(52, 211, 153, 0.2);
-  color: #34d399;
-}
-.badge-rejected {
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-}
-.badge-closed {
-  background-color: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
-}
+  .badge {
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+  }
+  .badge-pending {
+    background-color: rgba(250, 204, 21, 0.2);
+    color: #facc15;
+  }
+  .badge-approved {
+    background-color: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+  }
+  .badge-rejected {
+    background-color: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+  }
+  .badge-closed {
+    background-color: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+  }
 
-.btn-approve,
-.btn-reject {
-  font-weight: 600;
-  border: none;
-  white-space: nowrap;
-}
-.btn-approve {
-  background-color: rgba(52, 211, 153, 0.2);
-  color: #34d399;
-}
-.btn-approve:hover:not(:disabled) {
-  background-color: rgba(52, 211, 153, 0.35);
-}
-.btn-reject {
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-}
-.btn-reject:hover:not(:disabled) {
-  background-color: rgba(248, 113, 113, 0.35);
-}
+  .btn-approve,
+  .btn-reject {
+    font-weight: 600;
+    border: none;
+    white-space: nowrap;
+  }
+  .btn-approve {
+    background-color: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+  }
+  .btn-approve:hover:not(:disabled) {
+    background-color: rgba(52, 211, 153, 0.35);
+  }
+  .btn-reject {
+    background-color: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+  }
+  .btn-reject:hover:not(:disabled) {
+    background-color: rgba(248, 113, 113, 0.35);
+  }
 </style>

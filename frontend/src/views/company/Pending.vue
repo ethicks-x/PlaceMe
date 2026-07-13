@@ -1,26 +1,26 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import { router } from "../../router";
+  import { onMounted, ref } from "vue";
+  import axios from "axios";
+  import { router } from "../../router";
 
-const status = ref(null);
-const isLoading = ref(true);
-const error = ref("");
+  const status = ref(null);
+  const isLoading = ref(true);
+  const error = ref("");
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/company/status");
-    if (data.approvalStatus === "approved") {
-      router.replace("/company/dashboard");
-      return;
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/company/status");
+      if (data.approvalStatus === "approved") {
+        router.replace("/company/dashboard");
+        return;
+      }
+      status.value = data;
+    } catch (err) {
+      error.value = "Could not load your company status.";
+    } finally {
+      isLoading.value = false;
     }
-    status.value = data;
-  } catch (err) {
-    error.value = "Could not load your company status.";
-  } finally {
-    isLoading.value = false;
-  }
-});
+  });
 </script>
 
 <template>
@@ -49,22 +49,22 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.status-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 3rem 2rem;
-}
+  .status-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+  }
 
-.status-icon {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  display: inline-block;
-}
-.status-pending {
-  color: #facc15;
-}
-.status-rejected {
-  color: #f87171;
-}
+  .status-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+  .status-pending {
+    color: #facc15;
+  }
+  .status-rejected {
+    color: #f87171;
+  }
 </style>

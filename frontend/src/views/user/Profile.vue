@@ -1,59 +1,59 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import axios from "axios";
-import { useAuth } from "../../store/auth";
+  import { computed, onMounted, ref } from "vue";
+  import axios from "axios";
+  import { useAuth } from "../../store/auth";
 
-const { authState } = useAuth();
+  const { authState } = useAuth();
 
-const isStudent = computed(() => authState.user?.role === "student");
+  const isStudent = computed(() => authState.user?.role === "student");
 
-const form = ref({
-  fullName: "",
-  mobile: "",
-  degree: "",
-  graduationYear: "",
-  cgpa: "",
-  resumeUrl: "",
-  skills: "",
-  bio: "",
-});
-const isLoading = ref(true);
-const isSaving = ref(false);
-const error = ref("");
-const successMessage = ref("");
+  const form = ref({
+    fullName: "",
+    mobile: "",
+    degree: "",
+    graduationYear: "",
+    cgpa: "",
+    resumeUrl: "",
+    skills: "",
+    bio: "",
+  });
+  const isLoading = ref(true);
+  const isSaving = ref(false);
+  const error = ref("");
+  const successMessage = ref("");
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/profile");
-    form.value.fullName = data.fullName || "";
-    form.value.mobile = data.mobile || "";
-    form.value.degree = data.degree || "";
-    form.value.graduationYear = data.graduationYear || "";
-    form.value.cgpa = data.cgpa ?? "";
-    form.value.resumeUrl = data.resumeUrl || "";
-    form.value.skills = data.skills || "";
-    form.value.bio = data.bio || "";
-  } catch (err) {
-    error.value = "Could not load your profile.";
-  } finally {
-    isLoading.value = false;
-  }
-});
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/profile");
+      form.value.fullName = data.fullName || "";
+      form.value.mobile = data.mobile || "";
+      form.value.degree = data.degree || "";
+      form.value.graduationYear = data.graduationYear || "";
+      form.value.cgpa = data.cgpa ?? "";
+      form.value.resumeUrl = data.resumeUrl || "";
+      form.value.skills = data.skills || "";
+      form.value.bio = data.bio || "";
+    } catch (err) {
+      error.value = "Could not load your profile.";
+    } finally {
+      isLoading.value = false;
+    }
+  });
 
-const handleSave = async () => {
-  error.value = "";
-  successMessage.value = "";
-  isSaving.value = true;
+  const handleSave = async () => {
+    error.value = "";
+    successMessage.value = "";
+    isSaving.value = true;
 
-  try {
-    await axios.put("/api/profile", form.value);
-    successMessage.value = "Profile updated successfully.";
-  } catch (err) {
-    error.value = err.response?.data?.message || "Failed to update profile.";
-  } finally {
-    isSaving.value = false;
-  }
-};
+    try {
+      await axios.put("/api/profile", form.value);
+      successMessage.value = "Profile updated successfully.";
+    } catch (err) {
+      error.value = err.response?.data?.message || "Failed to update profile.";
+    } finally {
+      isSaving.value = false;
+    }
+  };
 </script>
 
 <template>
@@ -156,43 +156,43 @@ const handleSave = async () => {
 </template>
 
 <style scoped>
-.form-control {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  padding: 0.85rem 1rem;
-  border-radius: 0.5rem;
-}
-.form-control:disabled {
-  opacity: 0.6;
-}
-.form-label {
-  color: #94a3b8;
-}
+  .form-control {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+  }
+  .form-control:disabled {
+    opacity: 0.6;
+  }
+  .form-label {
+    color: #94a3b8;
+  }
 
-.section-divider {
-  border-color: rgba(255, 255, 255, 0.1);
-  margin: 2rem 0 1.5rem;
-}
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
+  .section-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 2rem 0 1.5rem;
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
 
-.btn-custom {
-  background-color: #38bdf8;
-  color: #020617;
-  font-weight: 700;
-  padding: 0.85rem 1.75rem;
-  border-radius: 0.5rem;
-  border: none;
-}
-.btn-custom:hover:not(:disabled) {
-  background-color: #34d399;
-}
-.btn-custom:disabled {
-  background-color: #64748b;
-  color: #94a3b8;
-}
+  .btn-custom {
+    background-color: #38bdf8;
+    color: #020617;
+    font-weight: 700;
+    padding: 0.85rem 1.75rem;
+    border-radius: 0.5rem;
+    border: none;
+  }
+  .btn-custom:hover:not(:disabled) {
+    background-color: #34d399;
+  }
+  .btn-custom:disabled {
+    background-color: #64748b;
+    color: #94a3b8;
+  }
 </style>

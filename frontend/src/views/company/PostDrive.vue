@@ -1,73 +1,73 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
-import { router } from "../../router";
+  import { onMounted, ref } from "vue";
+  import axios from "axios";
+  import { router } from "../../router";
 
-const isLoading = ref(true);
-const loadError = ref("");
+  const isLoading = ref(true);
+  const loadError = ref("");
 
-const form = ref({
-  jobTitle: "",
-  jobDesc: "",
-  eligibility: "",
-  minCgpa: "",
-  eligibleGraduationYear: "",
-  deadline: "",
-});
-const isSubmitting = ref(false);
-const formError = ref("");
-const formSuccess = ref("");
-const todayDate = new Date().toISOString().split("T")[0];
+  const form = ref({
+    jobTitle: "",
+    jobDesc: "",
+    eligibility: "",
+    minCgpa: "",
+    eligibleGraduationYear: "",
+    deadline: "",
+  });
+  const isSubmitting = ref(false);
+  const formError = ref("");
+  const formSuccess = ref("");
+  const todayDate = new Date().toISOString().split("T")[0];
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/company/status");
-    if (data.approvalStatus !== "approved") {
-      router.replace("/company/pending");
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/company/status");
+      if (data.approvalStatus !== "approved") {
+        router.replace("/company/pending");
+        return;
+      }
+    } catch (err) {
+      loadError.value = "Could not load your company details.";
+    } finally {
+      isLoading.value = false;
+    }
+  });
+
+  const handleCreate = async () => {
+    formError.value = "";
+    formSuccess.value = "";
+
+    if (form.value.deadline < todayDate) {
+      formError.value = "The application deadline must be in the future.";
       return;
     }
-  } catch (err) {
-    loadError.value = "Could not load your company details.";
-  } finally {
-    isLoading.value = false;
-  }
-});
 
-const handleCreate = async () => {
-  formError.value = "";
-  formSuccess.value = "";
+    isSubmitting.value = true;
 
-  if (form.value.deadline < todayDate) {
-    formError.value = "The application deadline must be in the future.";
-    return;
-  }
-
-  isSubmitting.value = true;
-
-  try {
-    await axios.post("/api/company/drives", {
-      jobTitle: form.value.jobTitle,
-      jobDesc: form.value.jobDesc,
-      eligibility: form.value.eligibility,
-      minCgpa: form.value.minCgpa || null,
-      eligibleGraduationYear: form.value.eligibleGraduationYear || null,
-      deadline: new Date(form.value.deadline).toISOString(),
-    });
-    formSuccess.value = "Drive submitted for admin approval.";
-    form.value = {
-      jobTitle: "",
-      jobDesc: "",
-      eligibility: "",
-      minCgpa: "",
-      eligibleGraduationYear: "",
-      deadline: "",
-    };
-  } catch (err) {
-    formError.value = err.response?.data?.message || "Failed to create drive.";
-  } finally {
-    isSubmitting.value = false;
-  }
-};
+    try {
+      await axios.post("/api/company/drives", {
+        jobTitle: form.value.jobTitle,
+        jobDesc: form.value.jobDesc,
+        eligibility: form.value.eligibility,
+        minCgpa: form.value.minCgpa || null,
+        eligibleGraduationYear: form.value.eligibleGraduationYear || null,
+        deadline: new Date(form.value.deadline).toISOString(),
+      });
+      formSuccess.value = "Drive submitted for admin approval.";
+      form.value = {
+        jobTitle: "",
+        jobDesc: "",
+        eligibility: "",
+        minCgpa: "",
+        eligibleGraduationYear: "",
+        deadline: "",
+      };
+    } catch (err) {
+      formError.value = err.response?.data?.message || "Failed to create drive.";
+    } finally {
+      isSubmitting.value = false;
+    }
+  };
 </script>
 
 <template>
@@ -149,47 +149,47 @@ const handleCreate = async () => {
 </template>
 
 <style scoped>
-.form-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-}
+  .form-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
 
-.switch-link {
-  color: #38bdf8;
-  text-decoration: none;
-  font-weight: 500;
-}
-.switch-link:hover {
-  color: #34d399;
-}
+  .switch-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .switch-link:hover {
+    color: #34d399;
+  }
 
-.form-control,
-textarea.form-control {
-  background-color: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-  padding: 0.85rem 1rem;
-  border-radius: 0.5rem;
-}
-.form-label {
-  color: #94a3b8;
-}
+  .form-control,
+  textarea.form-control {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+  }
+  .form-label {
+    color: #94a3b8;
+  }
 
-.btn-custom {
-  background-color: #38bdf8;
-  color: #020617;
-  font-weight: 700;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  border: none;
-}
-.btn-custom:hover:not(:disabled) {
-  background-color: #34d399;
-}
-.btn-custom:disabled {
-  background-color: #64748b;
-  color: #94a3b8;
-}
+  .btn-custom {
+    background-color: #38bdf8;
+    color: #020617;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+  }
+  .btn-custom:hover:not(:disabled) {
+    background-color: #34d399;
+  }
+  .btn-custom:disabled {
+    background-color: #64748b;
+    color: #94a3b8;
+  }
 </style>

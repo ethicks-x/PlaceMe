@@ -1,21 +1,21 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import axios from "axios";
+  import { onMounted, ref } from "vue";
+  import axios from "axios";
 
-const stats = ref(null);
-const isLoading = ref(true);
-const error = ref("");
+  const stats = ref(null);
+  const isLoading = ref(true);
+  const error = ref("");
 
-onMounted(async () => {
-  try {
-    const { data } = await axios.get("/api/admin/stats");
-    stats.value = data;
-  } catch (err) {
-    error.value = "Could not load statistics.";
-  } finally {
-    isLoading.value = false;
-  }
-});
+  onMounted(async () => {
+    try {
+      const { data } = await axios.get("/api/admin/stats");
+      stats.value = data;
+    } catch (err) {
+      error.value = "Could not load statistics.";
+    } finally {
+      isLoading.value = false;
+    }
+  });
 </script>
 
 <template>
@@ -108,45 +108,45 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.stat-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  text-align: center;
-}
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #38bdf8;
-}
-.stat-label {
-  color: #94a3b8;
-  margin-top: 0.5rem;
-}
+  .stat-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #38bdf8;
+  }
+  .stat-label {
+    color: #94a3b8;
+    margin-top: 0.5rem;
+  }
 
-.breakdown-card {
-  background: rgba(30, 41, 59, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  height: 100%;
-}
-.breakdown-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-.breakdown-row:last-of-type {
-  border-bottom: none;
-}
-.switch-link {
-  color: #38bdf8;
-  text-decoration: none;
-  font-weight: 500;
-}
-.switch-link:hover {
-  color: #34d399;
-}
+  .breakdown-card {
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: 100%;
+  }
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .breakdown-row:last-of-type {
+    border-bottom: none;
+  }
+  .switch-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .switch-link:hover {
+    color: #34d399;
+  }
 </style>
