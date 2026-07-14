@@ -113,7 +113,7 @@ def reject_company(company_id):
     if not company:
         return jsonify({"message": "Company not found"}), 404
 
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     company.approval_status = "rejected"
     company.remarks = data.get("remarks") or "Rejected by admin."
     db.session.commit()

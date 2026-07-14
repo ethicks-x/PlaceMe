@@ -109,8 +109,6 @@ def create_drive():
 
     try:
         deadline = datetime.fromisoformat(data.get("deadline"))
-        if deadline < datetime.utcnow():
-            return jsonify({"message": "The Application deadline is invalid."}), 400
     except ValueError:
         return jsonify({"message": "Invalid deadline format"}), 400
 

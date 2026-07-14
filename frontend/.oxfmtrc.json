@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "useTabs": false,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "arrowParens": "avoid",
+  "ignorePatterns": ["**/dist/**", "**/.next/**"],
+  "bracketSpacing": true,
+  "quoteProps": "as-needed",
+  "objectWrap": "preserve",
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
+  "embeddedLanguageFormatting": "auto",
+  "htmlWhitespaceSensitivity": "css",
+  "proseWrap": "preserve",
+  "vueIndentScriptAndStyle": true,
+  "plugins": {
+    "jsdoc": {
+      "commentLineStrategy": "singleLine",
+      "lineWrappingStyle": "greedy",
+      "separateTagGroups": false
+    },
+    "sortImports": {
+      "order": "asc",
+      "newlinesBetween": true
+    },
+    "sortPackageJson": {
+      "sortScripts": true
+    },
+    "sortTailwindcss": {
+      "attributes": ["class", "className", ":class"],
+      "functions": ["clsx", "cn"],
+      "preserveDuplicates": false,
+      "preserveWhitespace": false
+    }
+  }
+}
