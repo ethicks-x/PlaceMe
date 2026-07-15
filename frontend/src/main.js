@@ -7,12 +7,11 @@ import { useAuth } from "./store/auth";
 // Add the necessary CSS
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
-
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import App from "./App.vue";
 
-axios.defaults.baseURL = "http://localhost:6969";
+axios.defaults.baseURL = `http://${window.location.hostname}:6969`;
 axios.defaults.withCredentials = true;
 
 const { initAuth } = useAuth();
