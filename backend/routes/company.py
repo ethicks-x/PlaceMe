@@ -11,11 +11,11 @@ bp = Blueprint("company", __name__)
 APPL_ST = {"applied", "shortlisted", "selected", "rejected"}
 
 
-def _get_company_profile(user_id):
+def get_company_profile(user_id):
     return CompanyProfile.query.filter_by(user_id=user_id).first()
 
 
-def _serialize_drive(drive):
+def serialize_drive(drive):
     appl_count = Applications.query.filter_by(drive_id=drive.drive_id).count()
     return {
         "id": drive.drive_id,
@@ -30,7 +30,7 @@ def _serialize_drive(drive):
     }
 
 
-def _serialize_applicant(appl):
+def serialize_applicant(appl):
     student = User.query.get(appl.student_id)
     profile = StudentProfile.query.filter_by(user_id=appl.student_id).first()
     return {
@@ -53,7 +53,7 @@ def _serialize_applicant(appl):
 @jwt_required()
 def get_status():
     user_id = int(get_jwt_identity())
-    profile = _get_company_profile(user_id)
+    profile = get_company_profile(user_id)
     if not profile:
         return jsonify({"message": "Company profile not found"}), 404
 
@@ -72,7 +72,7 @@ def get_status():
 @jwt_required()
 def list_drives():
     user_id = int(get_jwt_identity())
-    profile = _get_company_profile(user_id)
+    profile = get_company_profile(user_id)
     if not profile:
         return jsonify({"message": "Company profile not found"}), 404
 
@@ -81,14 +81,14 @@ def list_drives():
         .order_by(PlacementDrives.drive_id.desc())
         .all()
     )
-    return jsonify([_serialize_drive(d) for d in drives]), 200
+    return jsonify([serialize_drive(d) for d in drives]), 200
 
 
 @bp.route("/drives", methods=["POST"])
 @jwt_required()
 def create_drive():
     user_id = int(get_jwt_identity())
-    profile = _get_company_profile(user_id)
+    profile = get_company_profile(user_id)
     if not profile:
         return jsonify({"message": "Company profile not found"}), 404
 
@@ -150,14 +150,14 @@ def create_drive():
         db.session.rollback()
         return jsonify({"message": "Failed to create drive", "error": str(e)}), 500
 
-    return jsonify(_serialize_drive(drive)), 201
+    return jsonify(serialize_drive(drive)), 201
 
 
 @bp.route("/drives/<int:drive_id>/applicants", methods=["GET"])
 @jwt_required()
 def list_applicants(drive_id):
     user_id = int(get_jwt_identity())
-    profile = _get_company_profile(user_id)
+    profile = get_company_profile(user_id)
     if not profile:
         return jsonify({"message": "Company profile not found"}), 404
 
@@ -173,8 +173,8 @@ def list_applicants(drive_id):
 
     return jsonify(
         {
-            "drive": _serialize_drive(drive),
-            "applicants": [_serialize_applicant(appl) for appl in applications],
+            "drive": serialize_drive(drive),
+            "applicants": [serialize_applicant(appl) for appl in applications],
         }
     ), 200
 
@@ -183,7 +183,7 @@ def list_applicants(drive_id):
 @jwt_required()
 def update_application_status(appl_id):
     user_id = int(get_jwt_identity())
-    profile = _get_company_profile(user_id)
+    profile = get_company_profile(user_id)
     if not profile:
         return jsonify({"message": "Company profile not found"}), 404
 
@@ -209,4 +209,4 @@ def update_application_status(appl_id):
         print(f"Application status update error: {e}")
         return jsonify({"message": "Failed to update the application. Please try again."}), 500
 
-    return jsonify(_serialize_applicant(application)), 200
+    return jsonify(serialize_applicant(application)), 200
