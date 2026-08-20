@@ -24,7 +24,7 @@ def admin_required(fn):
 
 def current_admin_name():
     admin = User.query.get(int(get_jwt_identity()))
-    return admin.full_name if admin else "An Admin"
+    return admin.full_name if admin else "Admin"
 
 
 def notify(message):
@@ -34,7 +34,7 @@ def notify(message):
         print(f"Failed to queue chat notifications: {e}")
 
 
-def _serialize_company(profile):
+def serialize_company(profile):
     user = User.query.get(profile.user_id)
     return {
         "id": profile.company_id,
@@ -49,7 +49,7 @@ def _serialize_company(profile):
     }
 
 
-def _serialize_student(user):
+def serialize_student(user):
     return {
         "id": user.user_id,
         "fullName": user.full_name,
@@ -59,7 +59,7 @@ def _serialize_student(user):
     }
 
 
-def _serialize_drive(drive):
+def serialize_drive(drive):
     company = CompanyProfile.query.get(drive.company_id)
     return {
         "id": drive.drive_id,
@@ -90,7 +90,7 @@ def list_companies():
         query = query.filter(CompanyProfile.company_name.ilike(f"%{search}%"))
 
     companies = query.order_by(CompanyProfile.company_id.desc()).all()
-    return jsonify([_serialize_company(c) for c in companies]), 200
+    return jsonify([serialize_company(c) for c in companies]), 200
 
 
 @bp.route("/companies/<int:company_id>/approve", methods=["POST"])
@@ -103,7 +103,7 @@ def approve_company(company_id):
     company.approval_status = "approved"
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} approved company "{company.company_name}".')
-    return jsonify(_serialize_company(company)), 200
+    return jsonify(serialize_company(company)), 200
 
 
 @bp.route("/companies/<int:company_id>/reject", methods=["POST"])
@@ -113,12 +113,12 @@ def reject_company(company_id):
     if not company:
         return jsonify({"message": "Company not found"}), 404
 
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     company.approval_status = "rejected"
     company.remarks = data.get("remarks") or "Rejected by admin."
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} rejected company "{company.company_name}".')
-    return jsonify(_serialize_company(company)), 200
+    return jsonify(serialize_company(company)), 200
 
 
 @bp.route("/companies/<int:company_id>/activate", methods=["POST"])
@@ -132,7 +132,7 @@ def activate_company(company_id):
     user.is_active = True
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} reactivated company "{company.company_name}".')
-    return jsonify(_serialize_company(company)), 200
+    return jsonify(serialize_company(company)), 200
 
 
 @bp.route("/companies/<int:company_id>/deactivate", methods=["POST"])
@@ -146,7 +146,7 @@ def deactivate_company(company_id):
     user.is_active = False
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} deactivated company "{company.company_name}".')
-    return jsonify(_serialize_company(company)), 200
+    return jsonify(serialize_company(company)), 200
 
 
 # ---------- Students ----------
@@ -165,7 +165,7 @@ def list_students():
         )
 
     students = query.order_by(User.user_id.desc()).all()
-    return jsonify([_serialize_student(s) for s in students]), 200
+    return jsonify([serialize_student(s) for s in students]), 200
 
 
 @bp.route("/students/<int:user_id>/activate", methods=["POST"])
@@ -178,7 +178,7 @@ def activate_student(user_id):
     user.is_active = True
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} reactivated student "{user.full_name}".')
-    return jsonify(_serialize_student(user)), 200
+    return jsonify(serialize_student(user)), 200
 
 
 @bp.route("/students/<int:user_id>/deactivate", methods=["POST"])
@@ -191,7 +191,7 @@ def deactivate_student(user_id):
     user.is_active = False
     db.session.commit()
     notify_chat_task(f'{current_admin_name()} deactivated student "{user.full_name}".')
-    return jsonify(_serialize_student(user)), 200
+    return jsonify(serialize_student(user)), 200
 
 
 # ---------- Drives ----------
@@ -220,7 +220,7 @@ def list_drives():
         )
 
     drives = query.order_by(PlacementDrives.drive_id.desc()).all()
-    return jsonify([_serialize_drive(d) for d in drives]), 200
+    return jsonify([serialize_drive(d) for d in drives]), 200
 
 
 @bp.route("/drives/<int:drive_id>/approve", methods=["POST"])
@@ -237,7 +237,7 @@ def approve_drive(drive_id):
     notify_chat_task(
         f'{current_admin_name()} approved drive "{drive.job_title}" ({company_name}).'
     )
-    return jsonify(_serialize_drive(drive)), 200
+    return jsonify(serialize_drive(drive)), 200
 
 
 @bp.route("/drives/<int:drive_id>/reject", methods=["POST"])
@@ -254,7 +254,7 @@ def reject_drive(drive_id):
     notify_chat_task(
         f'{current_admin_name()} rejected drive "{drive.job_title}" ({company_name}).'
     )
-    return jsonify(_serialize_drive(drive)), 200
+    return jsonify(serialize_drive(drive)), 200
 
 
 # ---------- Stats ----------

@@ -17,8 +17,7 @@
     return drives.value.filter(
       drive =>
         drive.jobTitle.toLowerCase().includes(query) ||
-        drive.companyName.toLowerCase().includes(query) ||
-        drive.eligibility.toLowerCase().includes(query),
+        drive.companyName.toLowerCase().includes(query),
     );
   });
 
@@ -83,7 +82,7 @@
       <input
         type="text"
         class="form-control search-input mb-4"
-        placeholder="Search by role, company, or eligibility"
+        placeholder="Search by role or company"
         v-model="search"
       />
       <div v-if="applyError" class="alert alert-danger py-2">{{ applyError }}</div>
@@ -187,6 +186,10 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     padding: 1.5rem;
+
+    & > div > div {
+      width: 100%;
+    }
   }
 
   .company-name {

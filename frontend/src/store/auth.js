@@ -9,6 +9,39 @@ const state = reactive({
   isAuthenticated: false,
 });
 
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfCookieName = "csrf_access_token";
+axios.defaults.xsrfHeaderName = "X-CSRF-TOKEN";
+
+// Helper function to read a cookie value by name
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
+}
+
+// Global Axios request interceptor
+axios.interceptors.request.use(
+  config => {
+    // Ensure credentials/cookies travel with the request[cite: 1]
+    config.withCredentials = true;
+
+    // Manually grab the CSRF token from document.cookie
+    const csrfToken = getCookie("csrf_access_token");
+
+    if (csrfToken) {
+      // Inject it straight into the header Flask expects
+      config.headers["X-CSRF-TOKEN"] = csrfToken;
+    }
+
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  },
+);
+
 async function initAuth() {
   const userFromLocalStorage = localStorage.getItem("user");
   const userFromSessionStorage = sessionStorage.getItem("user");
@@ -121,15 +154,15 @@ async function logout() {
   sessionStorage.removeItem("user");
   sessionStorage.removeItem("token");
 
-  // Clear axios header
-  delete axios.defaults.headers.common["Authorization"];
-
   // Tell backend to clear the auth cookie
   try {
     await axios.post("/api/auth/logout");
   } catch (error) {
     console.error("Logout API call failed:", error);
   }
+
+  // Clear axios header
+  delete axios.defaults.headers.common["Authorization"];
 
   // Redirect to login page
   if (router.currentRoute.value.name !== "login") {

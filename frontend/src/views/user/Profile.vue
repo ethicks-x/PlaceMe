@@ -109,12 +109,12 @@
             <input
               id="profileCgpa"
               type="number"
-              step="0.01"
+              step="0.1"
               min="0"
               max="10"
               class="form-control"
               v-model="form.cgpa"
-              placeholder="8.5"
+              placeholder="7.5"
             />
           </div>
         </div>
@@ -139,7 +139,7 @@
           />
         </div>
         <div class="mb-3">
-          <label class="form-label" for="profileBio">Bio</label>
+          <label class="form-label" for="profileBio">Bio (Optional)</label>
           <textarea
             id="profileBio"
             class="form-control"
@@ -168,6 +168,9 @@
   }
   .form-label {
     color: #94a3b8;
+  }
+  .form-control::placeholder {
+    color: #b5b5b5;
   }
 
   .section-divider {

@@ -60,7 +60,7 @@ sleep 2
 echo "${WHITE}---------------------------------------------------${NC}"
 echo "${DIM_WHITE}Firing up backend..${NC}"
 cd backend 
-uv run app.py &>/dev/null &
+uv run app.py &> server.log &
 BACKEND_PID=$!
 cd ..
 sleep 2
@@ -76,7 +76,7 @@ clear
 echo "${WHITE}---------------------------------------------------${NC}"
 echo "${DIM_WHITE}Starting Frontend...${NC}"
 cd frontend 
-bun run dev &>/dev/null &
+bun run dev &> front.log  &
 FRONTEND_PID=$!
 cd ..
 
