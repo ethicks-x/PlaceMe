@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@iconify-json/bi": "^1.2.7",
-    "@vitejs/plugin-vue": "^6.0.6",
+    "@vitejs/plugin-vue": "^6.0.8",
     "eslint-plugin-oxfmt": "^0.22.0",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.73.0",
